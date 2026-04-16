@@ -13,18 +13,29 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as PortalPropostasRouteImport } from './routes/portal.propostas'
 import { Route as PortalProjetosRouteImport } from './routes/portal.projetos'
 import { Route as PortalPerfilRouteImport } from './routes/portal.perfil'
+import { Route as PortalNotificacoesRouteImport } from './routes/portal.notificacoes'
 import { Route as PortalChatRouteImport } from './routes/portal.chat'
 import { Route as DashboardServicosRouteImport } from './routes/dashboard.servicos'
 import { Route as DashboardResultadosRouteImport } from './routes/dashboard.resultados'
+import { Route as DashboardPropostasRouteImport } from './routes/dashboard.propostas'
 import { Route as DashboardProjetosRouteImport } from './routes/dashboard.projetos'
+import { Route as DashboardPortfolioRouteImport } from './routes/dashboard.portfolio'
+import { Route as DashboardNotificacoesRouteImport } from './routes/dashboard.notificacoes'
 import { Route as DashboardLeadsRouteImport } from './routes/dashboard.leads'
+import { Route as DashboardFluxoCaixaRouteImport } from './routes/dashboard.fluxo-caixa'
 import { Route as DashboardDepoimentosRouteImport } from './routes/dashboard.depoimentos'
 import { Route as DashboardConfiguracoesRouteImport } from './routes/dashboard.configuracoes'
 import { Route as DashboardClientesRouteImport } from './routes/dashboard.clientes'
+import { Route as DashboardCalendarioRouteImport } from './routes/dashboard.calendario'
+import { Route as DashboardAuditoriaRouteImport } from './routes/dashboard.auditoria'
+import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
 import { Route as ApiBootstrapAdminRouteImport } from './routes/api.bootstrap-admin'
+import { Route as PortalPropostasIdRouteImport } from './routes/portal.propostas.$id'
 import { Route as PortalProjetosProjectIdRouteImport } from './routes/portal.projetos.$projectId'
+import { Route as DashboardPropostasIdRouteImport } from './routes/dashboard.propostas.$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -46,6 +57,11 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortalPropostasRoute = PortalPropostasRouteImport.update({
+  id: '/portal/propostas',
+  path: '/portal/propostas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortalProjetosRoute = PortalProjetosRouteImport.update({
   id: '/portal/projetos',
   path: '/portal/projetos',
@@ -54,6 +70,11 @@ const PortalProjetosRoute = PortalProjetosRouteImport.update({
 const PortalPerfilRoute = PortalPerfilRouteImport.update({
   id: '/portal/perfil',
   path: '/portal/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalNotificacoesRoute = PortalNotificacoesRouteImport.update({
+  id: '/portal/notificacoes',
+  path: '/portal/notificacoes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalChatRoute = PortalChatRouteImport.update({
@@ -71,14 +92,34 @@ const DashboardResultadosRoute = DashboardResultadosRouteImport.update({
   path: '/dashboard/resultados',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardPropostasRoute = DashboardPropostasRouteImport.update({
+  id: '/dashboard/propostas',
+  path: '/dashboard/propostas',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardProjetosRoute = DashboardProjetosRouteImport.update({
   id: '/dashboard/projetos',
   path: '/dashboard/projetos',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardPortfolioRoute = DashboardPortfolioRouteImport.update({
+  id: '/dashboard/portfolio',
+  path: '/dashboard/portfolio',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardNotificacoesRoute = DashboardNotificacoesRouteImport.update({
+  id: '/dashboard/notificacoes',
+  path: '/dashboard/notificacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardLeadsRoute = DashboardLeadsRouteImport.update({
   id: '/dashboard/leads',
   path: '/dashboard/leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardFluxoCaixaRoute = DashboardFluxoCaixaRouteImport.update({
+  id: '/dashboard/fluxo-caixa',
+  path: '/dashboard/fluxo-caixa',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardDepoimentosRoute = DashboardDepoimentosRouteImport.update({
@@ -96,71 +137,129 @@ const DashboardClientesRoute = DashboardClientesRouteImport.update({
   path: '/dashboard/clientes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardCalendarioRoute = DashboardCalendarioRouteImport.update({
+  id: '/dashboard/calendario',
+  path: '/dashboard/calendario',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardAuditoriaRoute = DashboardAuditoriaRouteImport.update({
+  id: '/dashboard/auditoria',
+  path: '/dashboard/auditoria',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
+  id: '/dashboard/analytics',
+  path: '/dashboard/analytics',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiBootstrapAdminRoute = ApiBootstrapAdminRouteImport.update({
   id: '/api/bootstrap-admin',
   path: '/api/bootstrap-admin',
   getParentRoute: () => rootRouteImport,
+} as any)
+const PortalPropostasIdRoute = PortalPropostasIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => PortalPropostasRoute,
 } as any)
 const PortalProjetosProjectIdRoute = PortalProjetosProjectIdRouteImport.update({
   id: '/$projectId',
   path: '/$projectId',
   getParentRoute: () => PortalProjetosRoute,
 } as any)
+const DashboardPropostasIdRoute = DashboardPropostasIdRouteImport.update({
+  id: '/$id',
+  path: '/$id',
+  getParentRoute: () => DashboardPropostasRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/auditoria': typeof DashboardAuditoriaRoute
+  '/dashboard/calendario': typeof DashboardCalendarioRoute
   '/dashboard/clientes': typeof DashboardClientesRoute
   '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
+  '/dashboard/fluxo-caixa': typeof DashboardFluxoCaixaRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/notificacoes': typeof DashboardNotificacoesRoute
+  '/dashboard/portfolio': typeof DashboardPortfolioRoute
   '/dashboard/projetos': typeof DashboardProjetosRoute
+  '/dashboard/propostas': typeof DashboardPropostasRouteWithChildren
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
   '/portal/chat': typeof PortalChatRoute
+  '/portal/notificacoes': typeof PortalNotificacoesRoute
   '/portal/perfil': typeof PortalPerfilRoute
   '/portal/projetos': typeof PortalProjetosRouteWithChildren
+  '/portal/propostas': typeof PortalPropostasRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/portal/': typeof PortalIndexRoute
+  '/dashboard/propostas/$id': typeof DashboardPropostasIdRoute
   '/portal/projetos/$projectId': typeof PortalProjetosProjectIdRoute
+  '/portal/propostas/$id': typeof PortalPropostasIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/auditoria': typeof DashboardAuditoriaRoute
+  '/dashboard/calendario': typeof DashboardCalendarioRoute
   '/dashboard/clientes': typeof DashboardClientesRoute
   '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
+  '/dashboard/fluxo-caixa': typeof DashboardFluxoCaixaRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/notificacoes': typeof DashboardNotificacoesRoute
+  '/dashboard/portfolio': typeof DashboardPortfolioRoute
   '/dashboard/projetos': typeof DashboardProjetosRoute
+  '/dashboard/propostas': typeof DashboardPropostasRouteWithChildren
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
   '/portal/chat': typeof PortalChatRoute
+  '/portal/notificacoes': typeof PortalNotificacoesRoute
   '/portal/perfil': typeof PortalPerfilRoute
   '/portal/projetos': typeof PortalProjetosRouteWithChildren
+  '/portal/propostas': typeof PortalPropostasRouteWithChildren
   '/dashboard': typeof DashboardIndexRoute
   '/portal': typeof PortalIndexRoute
+  '/dashboard/propostas/$id': typeof DashboardPropostasIdRoute
   '/portal/projetos/$projectId': typeof PortalProjetosProjectIdRoute
+  '/portal/propostas/$id': typeof PortalPropostasIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
+  '/dashboard/analytics': typeof DashboardAnalyticsRoute
+  '/dashboard/auditoria': typeof DashboardAuditoriaRoute
+  '/dashboard/calendario': typeof DashboardCalendarioRoute
   '/dashboard/clientes': typeof DashboardClientesRoute
   '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
+  '/dashboard/fluxo-caixa': typeof DashboardFluxoCaixaRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/notificacoes': typeof DashboardNotificacoesRoute
+  '/dashboard/portfolio': typeof DashboardPortfolioRoute
   '/dashboard/projetos': typeof DashboardProjetosRoute
+  '/dashboard/propostas': typeof DashboardPropostasRouteWithChildren
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
   '/portal/chat': typeof PortalChatRoute
+  '/portal/notificacoes': typeof PortalNotificacoesRoute
   '/portal/perfil': typeof PortalPerfilRoute
   '/portal/projetos': typeof PortalProjetosRouteWithChildren
+  '/portal/propostas': typeof PortalPropostasRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
   '/portal/': typeof PortalIndexRoute
+  '/dashboard/propostas/$id': typeof DashboardPropostasIdRoute
   '/portal/projetos/$projectId': typeof PortalProjetosProjectIdRoute
+  '/portal/propostas/$id': typeof PortalPropostasIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -168,71 +267,113 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/api/bootstrap-admin'
+    | '/dashboard/analytics'
+    | '/dashboard/auditoria'
+    | '/dashboard/calendario'
     | '/dashboard/clientes'
     | '/dashboard/configuracoes'
     | '/dashboard/depoimentos'
+    | '/dashboard/fluxo-caixa'
     | '/dashboard/leads'
+    | '/dashboard/notificacoes'
+    | '/dashboard/portfolio'
     | '/dashboard/projetos'
+    | '/dashboard/propostas'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
     | '/portal/chat'
+    | '/portal/notificacoes'
     | '/portal/perfil'
     | '/portal/projetos'
+    | '/portal/propostas'
     | '/dashboard/'
     | '/portal/'
+    | '/dashboard/propostas/$id'
     | '/portal/projetos/$projectId'
+    | '/portal/propostas/$id'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
     | '/api/bootstrap-admin'
+    | '/dashboard/analytics'
+    | '/dashboard/auditoria'
+    | '/dashboard/calendario'
     | '/dashboard/clientes'
     | '/dashboard/configuracoes'
     | '/dashboard/depoimentos'
+    | '/dashboard/fluxo-caixa'
     | '/dashboard/leads'
+    | '/dashboard/notificacoes'
+    | '/dashboard/portfolio'
     | '/dashboard/projetos'
+    | '/dashboard/propostas'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
     | '/portal/chat'
+    | '/portal/notificacoes'
     | '/portal/perfil'
     | '/portal/projetos'
+    | '/portal/propostas'
     | '/dashboard'
     | '/portal'
+    | '/dashboard/propostas/$id'
     | '/portal/projetos/$projectId'
+    | '/portal/propostas/$id'
   id:
     | '__root__'
     | '/'
     | '/login'
     | '/api/bootstrap-admin'
+    | '/dashboard/analytics'
+    | '/dashboard/auditoria'
+    | '/dashboard/calendario'
     | '/dashboard/clientes'
     | '/dashboard/configuracoes'
     | '/dashboard/depoimentos'
+    | '/dashboard/fluxo-caixa'
     | '/dashboard/leads'
+    | '/dashboard/notificacoes'
+    | '/dashboard/portfolio'
     | '/dashboard/projetos'
+    | '/dashboard/propostas'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
     | '/portal/chat'
+    | '/portal/notificacoes'
     | '/portal/perfil'
     | '/portal/projetos'
+    | '/portal/propostas'
     | '/dashboard/'
     | '/portal/'
+    | '/dashboard/propostas/$id'
     | '/portal/projetos/$projectId'
+    | '/portal/propostas/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   ApiBootstrapAdminRoute: typeof ApiBootstrapAdminRoute
+  DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
+  DashboardAuditoriaRoute: typeof DashboardAuditoriaRoute
+  DashboardCalendarioRoute: typeof DashboardCalendarioRoute
   DashboardClientesRoute: typeof DashboardClientesRoute
   DashboardConfiguracoesRoute: typeof DashboardConfiguracoesRoute
   DashboardDepoimentosRoute: typeof DashboardDepoimentosRoute
+  DashboardFluxoCaixaRoute: typeof DashboardFluxoCaixaRoute
   DashboardLeadsRoute: typeof DashboardLeadsRoute
+  DashboardNotificacoesRoute: typeof DashboardNotificacoesRoute
+  DashboardPortfolioRoute: typeof DashboardPortfolioRoute
   DashboardProjetosRoute: typeof DashboardProjetosRoute
+  DashboardPropostasRoute: typeof DashboardPropostasRouteWithChildren
   DashboardResultadosRoute: typeof DashboardResultadosRoute
   DashboardServicosRoute: typeof DashboardServicosRoute
   PortalChatRoute: typeof PortalChatRoute
+  PortalNotificacoesRoute: typeof PortalNotificacoesRoute
   PortalPerfilRoute: typeof PortalPerfilRoute
   PortalProjetosRoute: typeof PortalProjetosRouteWithChildren
+  PortalPropostasRoute: typeof PortalPropostasRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
   PortalIndexRoute: typeof PortalIndexRoute
 }
@@ -267,6 +408,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portal/propostas': {
+      id: '/portal/propostas'
+      path: '/portal/propostas'
+      fullPath: '/portal/propostas'
+      preLoaderRoute: typeof PortalPropostasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portal/projetos': {
       id: '/portal/projetos'
       path: '/portal/projetos'
@@ -279,6 +427,13 @@ declare module '@tanstack/react-router' {
       path: '/portal/perfil'
       fullPath: '/portal/perfil'
       preLoaderRoute: typeof PortalPerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal/notificacoes': {
+      id: '/portal/notificacoes'
+      path: '/portal/notificacoes'
+      fullPath: '/portal/notificacoes'
+      preLoaderRoute: typeof PortalNotificacoesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal/chat': {
@@ -302,6 +457,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardResultadosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/propostas': {
+      id: '/dashboard/propostas'
+      path: '/dashboard/propostas'
+      fullPath: '/dashboard/propostas'
+      preLoaderRoute: typeof DashboardPropostasRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/projetos': {
       id: '/dashboard/projetos'
       path: '/dashboard/projetos'
@@ -309,11 +471,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardProjetosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/portfolio': {
+      id: '/dashboard/portfolio'
+      path: '/dashboard/portfolio'
+      fullPath: '/dashboard/portfolio'
+      preLoaderRoute: typeof DashboardPortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/notificacoes': {
+      id: '/dashboard/notificacoes'
+      path: '/dashboard/notificacoes'
+      fullPath: '/dashboard/notificacoes'
+      preLoaderRoute: typeof DashboardNotificacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/leads': {
       id: '/dashboard/leads'
       path: '/dashboard/leads'
       fullPath: '/dashboard/leads'
       preLoaderRoute: typeof DashboardLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/fluxo-caixa': {
+      id: '/dashboard/fluxo-caixa'
+      path: '/dashboard/fluxo-caixa'
+      fullPath: '/dashboard/fluxo-caixa'
+      preLoaderRoute: typeof DashboardFluxoCaixaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/depoimentos': {
@@ -337,12 +520,40 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardClientesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/calendario': {
+      id: '/dashboard/calendario'
+      path: '/dashboard/calendario'
+      fullPath: '/dashboard/calendario'
+      preLoaderRoute: typeof DashboardCalendarioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/auditoria': {
+      id: '/dashboard/auditoria'
+      path: '/dashboard/auditoria'
+      fullPath: '/dashboard/auditoria'
+      preLoaderRoute: typeof DashboardAuditoriaRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/analytics': {
+      id: '/dashboard/analytics'
+      path: '/dashboard/analytics'
+      fullPath: '/dashboard/analytics'
+      preLoaderRoute: typeof DashboardAnalyticsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/bootstrap-admin': {
       id: '/api/bootstrap-admin'
       path: '/api/bootstrap-admin'
       fullPath: '/api/bootstrap-admin'
       preLoaderRoute: typeof ApiBootstrapAdminRouteImport
       parentRoute: typeof rootRouteImport
+    }
+    '/portal/propostas/$id': {
+      id: '/portal/propostas/$id'
+      path: '/$id'
+      fullPath: '/portal/propostas/$id'
+      preLoaderRoute: typeof PortalPropostasIdRouteImport
+      parentRoute: typeof PortalPropostasRoute
     }
     '/portal/projetos/$projectId': {
       id: '/portal/projetos/$projectId'
@@ -351,8 +562,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalProjetosProjectIdRouteImport
       parentRoute: typeof PortalProjetosRoute
     }
+    '/dashboard/propostas/$id': {
+      id: '/dashboard/propostas/$id'
+      path: '/$id'
+      fullPath: '/dashboard/propostas/$id'
+      preLoaderRoute: typeof DashboardPropostasIdRouteImport
+      parentRoute: typeof DashboardPropostasRoute
+    }
   }
 }
+
+interface DashboardPropostasRouteChildren {
+  DashboardPropostasIdRoute: typeof DashboardPropostasIdRoute
+}
+
+const DashboardPropostasRouteChildren: DashboardPropostasRouteChildren = {
+  DashboardPropostasIdRoute: DashboardPropostasIdRoute,
+}
+
+const DashboardPropostasRouteWithChildren =
+  DashboardPropostasRoute._addFileChildren(DashboardPropostasRouteChildren)
 
 interface PortalProjetosRouteChildren {
   PortalProjetosProjectIdRoute: typeof PortalProjetosProjectIdRoute
@@ -366,20 +595,41 @@ const PortalProjetosRouteWithChildren = PortalProjetosRoute._addFileChildren(
   PortalProjetosRouteChildren,
 )
 
+interface PortalPropostasRouteChildren {
+  PortalPropostasIdRoute: typeof PortalPropostasIdRoute
+}
+
+const PortalPropostasRouteChildren: PortalPropostasRouteChildren = {
+  PortalPropostasIdRoute: PortalPropostasIdRoute,
+}
+
+const PortalPropostasRouteWithChildren = PortalPropostasRoute._addFileChildren(
+  PortalPropostasRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   ApiBootstrapAdminRoute: ApiBootstrapAdminRoute,
+  DashboardAnalyticsRoute: DashboardAnalyticsRoute,
+  DashboardAuditoriaRoute: DashboardAuditoriaRoute,
+  DashboardCalendarioRoute: DashboardCalendarioRoute,
   DashboardClientesRoute: DashboardClientesRoute,
   DashboardConfiguracoesRoute: DashboardConfiguracoesRoute,
   DashboardDepoimentosRoute: DashboardDepoimentosRoute,
+  DashboardFluxoCaixaRoute: DashboardFluxoCaixaRoute,
   DashboardLeadsRoute: DashboardLeadsRoute,
+  DashboardNotificacoesRoute: DashboardNotificacoesRoute,
+  DashboardPortfolioRoute: DashboardPortfolioRoute,
   DashboardProjetosRoute: DashboardProjetosRoute,
+  DashboardPropostasRoute: DashboardPropostasRouteWithChildren,
   DashboardResultadosRoute: DashboardResultadosRoute,
   DashboardServicosRoute: DashboardServicosRoute,
   PortalChatRoute: PortalChatRoute,
+  PortalNotificacoesRoute: PortalNotificacoesRoute,
   PortalPerfilRoute: PortalPerfilRoute,
   PortalProjetosRoute: PortalProjetosRouteWithChildren,
+  PortalPropostasRoute: PortalPropostasRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
   PortalIndexRoute: PortalIndexRoute,
 }

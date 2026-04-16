@@ -1,23 +1,29 @@
 import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Briefcase, MessageSquareQuote, Inbox, BarChart3,
-  Settings, LogOut, Sparkles, Loader2,
+  Settings, LogOut, Loader2, Users, FolderKanban, FileText, DollarSign,
+  Image as ImageIcon, History, Calendar, Menu, X,
 } from "lucide-react";
 import { toast } from "sonner";
-
-import { Users, FolderKanban } from "lucide-react";
+import { BrandLogo } from "@/components/BrandLogo";
+import { NotificationBell } from "@/components/NotificationBell";
 
 const NAV = [
-  { to: "/dashboard", label: "Visão geral", icon: LayoutDashboard },
-  { to: "/dashboard/clientes", label: "Clientes", icon: Users },
-  { to: "/dashboard/projetos", label: "Projetos", icon: FolderKanban },
+  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
   { to: "/dashboard/servicos", label: "Serviços", icon: Briefcase },
-  { to: "/dashboard/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
+  { to: "/dashboard/projetos", label: "Projetos", icon: FolderKanban },
+  { to: "/dashboard/clientes", label: "Clientes", icon: Users },
   { to: "/dashboard/leads", label: "Leads", icon: Inbox },
-  { to: "/dashboard/resultados", label: "Resultados", icon: BarChart3 },
+  { to: "/dashboard/propostas", label: "Propostas", icon: FileText },
+  { to: "/dashboard/fluxo-caixa", label: "Fluxo de Caixa", icon: DollarSign },
+  { to: "/dashboard/portfolio", label: "Portfólio", icon: ImageIcon },
+  { to: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+  { to: "/dashboard/auditoria", label: "Auditoria", icon: History },
+  { to: "/dashboard/calendario", label: "Calendário", icon: Calendar },
+  { to: "/dashboard/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
   { to: "/dashboard/configuracoes", label: "Configurações", icon: Settings },
 ];
 
@@ -25,12 +31,15 @@ export function DashboardLayout({ children }: { children?: ReactNode }) {
   const { session, loading, isAdmin, user } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   useEffect(() => {
     if (loading) return;
     if (!session) navigate({ to: "/login" });
     else if (!isAdmin) navigate({ to: "/portal" });
   }, [session, loading, isAdmin, navigate]);
+
+  useEffect(() => { setMobileOpen(false); }, [location.pathname]);
 
   if (loading || !session) {
     return (
@@ -65,63 +74,69 @@ export function DashboardLayout({ children }: { children?: ReactNode }) {
     navigate({ to: "/" });
   }
 
+  const SidebarContent = (
+    <>
+      <Link to="/dashboard" className="flex h-16 items-center border-b border-border px-5">
+        <BrandLogo size="md" />
+      </Link>
+      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
+        {NAV.map(({ to, label, icon: Icon, exact }) => {
+          const active = exact ? location.pathname === to : location.pathname.startsWith(to);
+          return (
+            <Link
+              key={to} to={to} preload="intent"
+              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-smooth ${
+                active
+                  ? "bg-gradient-brand text-primary-foreground shadow-elegant"
+                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+              }`}
+            >
+              <Icon className="h-4 w-4" />
+              {label}
+            </Link>
+          );
+        })}
+      </nav>
+      <div className="border-t border-border p-3">
+        <div className="mb-3 px-2 text-xs">
+          <p className="truncate font-medium">{user?.email}</p>
+          <p className="text-muted-foreground">Sessão ativa</p>
+        </div>
+        <button
+          onClick={handleLogout}
+          className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
+        >
+          <LogOut className="h-4 w-4" /> Sair
+        </button>
+      </div>
+    </>
+  );
+
   return (
     <div className="flex min-h-screen w-full bg-secondary/30">
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-card md:flex">
-        <Link to="/dashboard" className="flex h-16 items-center gap-2 border-b border-border px-5 font-display font-bold">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-brand">
-            <Sparkles className="h-4 w-4 text-primary-foreground" />
-          </span>
-          Daina <span className="text-gradient-brand">Flow</span>
-        </Link>
-        <nav className="flex-1 space-y-1 p-3">
-          {NAV.map(({ to, label, icon: Icon }) => {
-            const active = location.pathname === to ||
-              (to !== "/dashboard" && location.pathname.startsWith(to));
-            return (
-              <Link
-                key={to} to={to}
-                className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-smooth ${
-                  active
-                    ? "bg-gradient-brand text-primary-foreground shadow-elegant"
-                    : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-                }`}
-              >
-                <Icon className="h-4 w-4" />
-                {label}
-              </Link>
-            );
-          })}
-        </nav>
-        <div className="border-t border-border p-3">
-          <div className="mb-3 px-2 text-xs">
-            <p className="truncate font-medium">{user?.email}</p>
-            <p className="text-muted-foreground">Sessão ativa</p>
-          </div>
-          <button
-            onClick={handleLogout}
-            className="flex w-full items-center gap-2 rounded-xl px-3 py-2.5 text-sm font-medium text-muted-foreground hover:bg-secondary hover:text-foreground"
-          >
-            <LogOut className="h-4 w-4" /> Sair
-          </button>
-        </div>
+        {SidebarContent}
       </aside>
 
+      {mobileOpen && (
+        <>
+          <div onClick={() => setMobileOpen(false)} className="fixed inset-0 z-40 bg-black/40 md:hidden" />
+          <aside className="fixed left-0 top-0 z-50 flex h-screen w-64 flex-col border-r border-border bg-card md:hidden animate-in slide-in-from-left">
+            {SidebarContent}
+          </aside>
+        </>
+      )}
+
       <main className="flex-1 overflow-x-hidden p-4 md:p-8">
-        <div className="md:hidden mb-4 flex items-center justify-between rounded-2xl border border-border bg-card p-3">
-          <span className="font-display font-bold">Daina Flow</span>
-          <button onClick={handleLogout} className="text-sm text-muted-foreground"><LogOut className="h-4 w-4" /></button>
+        <div className="mb-4 flex items-center justify-between rounded-2xl border border-border bg-card p-3 md:hidden">
+          <button onClick={() => setMobileOpen(true)} aria-label="Abrir menu" className="grid h-9 w-9 place-items-center rounded-lg border border-border">
+            <Menu className="h-4 w-4" />
+          </button>
+          <BrandLogo size="sm" />
+          <NotificationBell />
         </div>
-        <div className="md:hidden mb-4 grid grid-cols-3 gap-2">
-          {NAV.map(({ to, label, icon: Icon }) => {
-            const active = location.pathname === to;
-            return (
-              <Link key={to} to={to} className={`flex flex-col items-center gap-1 rounded-xl border border-border bg-card p-2 text-[10px] font-medium ${active ? "text-primary" : "text-muted-foreground"}`}>
-                <Icon className="h-4 w-4" />
-                {label.split(" ")[0]}
-              </Link>
-            );
-          })}
+        <div className="mb-4 hidden items-center justify-end gap-2 md:flex">
+          <NotificationBell />
         </div>
         {children ?? <Outlet />}
       </main>
