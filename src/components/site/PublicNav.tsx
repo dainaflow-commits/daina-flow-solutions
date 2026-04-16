@@ -1,14 +1,12 @@
 import { Link } from "@tanstack/react-router";
-import { Sparkles } from "lucide-react";
+import logo from "@/assets/dainaflow-logo.png";
 
 export function PublicNav() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         <Link to="/" className="flex items-center gap-2 font-display font-bold text-lg">
-          <span className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-brand shadow-elegant">
-            <Sparkles className="h-4 w-4 text-primary-foreground" />
-          </span>
+          <img src={logo} alt="Daina Flow" className="h-10 w-10 object-contain" />
           <span>Daina <span className="text-gradient-brand">Flow</span></span>
         </Link>
         <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
