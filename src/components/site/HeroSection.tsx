@@ -162,7 +162,7 @@ export function HeroSection() {
             transition={{ delay: 0.9 }}
           >
             <p className="flex items-center gap-1.5 text-xs font-semibold">
-              <span className="h-2 w-2 animate-pulse rounded-full bg-emerald-500" />
+              <span className="h-2 w-2 animate-pulse rounded-full" style={{ background: "var(--accent-cyan)" }} />
               Disponível agora
             </p>
           </motion.div>
