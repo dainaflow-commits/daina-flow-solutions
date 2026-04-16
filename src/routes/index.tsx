@@ -4,7 +4,7 @@ import { HeroSection } from "@/components/site/HeroSection";
 import { AboutSection } from "@/components/site/AboutSection";
 import { DifferentialSection } from "@/components/site/DifferentialSection";
 import { ServicesSection } from "@/components/site/ServicesSection";
-import { ResultsSection } from "@/components/site/ResultsSection";
+
 import { ContactSection } from "@/components/site/ContactSection";
 import { Footer } from "@/components/site/Footer";
 import { WhatsappFloat } from "@/components/site/WhatsappFloat";
@@ -31,7 +31,6 @@ function Index() {
         <AboutSection />
         <DifferentialSection />
         <ServicesSection />
-        <ResultsSection />
         <ContactSection />
       </main>
       <Footer />
