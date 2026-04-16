@@ -1,26 +1,41 @@
 import { createFileRoute } from "@tanstack/react-router";
+import { PublicNav } from "@/components/site/PublicNav";
+import { HeroSection } from "@/components/site/HeroSection";
+import { AboutSection } from "@/components/site/AboutSection";
+import { DifferentialSection } from "@/components/site/DifferentialSection";
+import { ServicesSection } from "@/components/site/ServicesSection";
+import { ResultsSection } from "@/components/site/ResultsSection";
+import { ContactSection } from "@/components/site/ContactSection";
+import { Footer } from "@/components/site/Footer";
+import { WhatsappFloat } from "@/components/site/WhatsappFloat";
 
 export const Route = createFileRoute("/")({
+  head: () => ({
+    meta: [
+      { title: "Daina Flow — Transformando dados em decisões inteligentes" },
+      { name: "description", content: "Larissa Daina · Analista Administrativa Jr. especialista em People Analytics, Governança de Dados e Automação Low-code/No-code." },
+      { property: "og:title", content: "Daina Flow — Transformando dados em decisões" },
+      { property: "og:description", content: "Soluções práticas em People Analytics, automação e dashboards." },
+      { property: "og:type", content: "website" },
+    ],
+  }),
   component: Index,
 });
 
-// IMPORTANT: Replace this placeholder. For sites with multiple pages (About, Services, Contact, etc.),
-// create separate route files (about.tsx, services.tsx, contact.tsx) — don't put all pages in this file.
-function PlaceholderIndex() {
+function Index() {
   return (
-    <div
-      className="flex min-h-screen items-center justify-center"
-      style={{ backgroundColor: "#fcfbf8" }}
-    >
-      <img
-        data-lovable-blank-page-placeholder="REMOVE_THIS"
-        src="https://cdn.gpteng.co/blank-app-v1.svg"
-        alt="Your app will live here!"
-      />
+    <div className="min-h-screen bg-background">
+      <PublicNav />
+      <main>
+        <HeroSection />
+        <AboutSection />
+        <DifferentialSection />
+        <ServicesSection />
+        <ResultsSection />
+        <ContactSection />
+      </main>
+      <Footer />
+      <WhatsappFloat />
     </div>
   );
-}
-
-function Index() {
-  return <PlaceholderIndex />;
 }
