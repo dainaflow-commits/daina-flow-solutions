@@ -12,7 +12,6 @@ export function PublicNav() {
           <a href="#sobre" className="text-muted-foreground transition-smooth hover:text-foreground">Sobre</a>
           <a href="#servicos" className="text-muted-foreground transition-smooth hover:text-foreground">Serviços</a>
           <a href="#diferencial" className="text-muted-foreground transition-smooth hover:text-foreground">Diferencial</a>
-          <a href="#resultados" className="text-muted-foreground transition-smooth hover:text-foreground">Resultados</a>
           <a href="#contato" className="text-muted-foreground transition-smooth hover:text-foreground">Contato</a>
         </nav>
         <a
