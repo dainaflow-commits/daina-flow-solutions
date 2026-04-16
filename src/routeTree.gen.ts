@@ -12,6 +12,11 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as DashboardServicosRouteImport } from './routes/dashboard.servicos'
+import { Route as DashboardResultadosRouteImport } from './routes/dashboard.resultados'
+import { Route as DashboardLeadsRouteImport } from './routes/dashboard.leads'
+import { Route as DashboardDepoimentosRouteImport } from './routes/dashboard.depoimentos'
+import { Route as DashboardConfiguracoesRouteImport } from './routes/dashboard.configuracoes'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -28,34 +33,104 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/dashboard/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardServicosRoute = DashboardServicosRouteImport.update({
+  id: '/dashboard/servicos',
+  path: '/dashboard/servicos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardResultadosRoute = DashboardResultadosRouteImport.update({
+  id: '/dashboard/resultados',
+  path: '/dashboard/resultados',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardLeadsRoute = DashboardLeadsRouteImport.update({
+  id: '/dashboard/leads',
+  path: '/dashboard/leads',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardDepoimentosRoute = DashboardDepoimentosRouteImport.update({
+  id: '/dashboard/depoimentos',
+  path: '/dashboard/depoimentos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardConfiguracoesRoute = DashboardConfiguracoesRouteImport.update({
+  id: '/dashboard/configuracoes',
+  path: '/dashboard/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
+  '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
+  '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/resultados': typeof DashboardResultadosRoute
+  '/dashboard/servicos': typeof DashboardServicosRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
+  '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
+  '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/resultados': typeof DashboardResultadosRoute
+  '/dashboard/servicos': typeof DashboardServicosRoute
   '/dashboard': typeof DashboardIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
+  '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
+  '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/resultados': typeof DashboardResultadosRoute
+  '/dashboard/servicos': typeof DashboardServicosRoute
   '/dashboard/': typeof DashboardIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/dashboard/'
+  fullPaths:
+    | '/'
+    | '/login'
+    | '/dashboard/configuracoes'
+    | '/dashboard/depoimentos'
+    | '/dashboard/leads'
+    | '/dashboard/resultados'
+    | '/dashboard/servicos'
+    | '/dashboard/'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/dashboard'
-  id: '__root__' | '/' | '/login' | '/dashboard/'
+  to:
+    | '/'
+    | '/login'
+    | '/dashboard/configuracoes'
+    | '/dashboard/depoimentos'
+    | '/dashboard/leads'
+    | '/dashboard/resultados'
+    | '/dashboard/servicos'
+    | '/dashboard'
+  id:
+    | '__root__'
+    | '/'
+    | '/login'
+    | '/dashboard/configuracoes'
+    | '/dashboard/depoimentos'
+    | '/dashboard/leads'
+    | '/dashboard/resultados'
+    | '/dashboard/servicos'
+    | '/dashboard/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
+  DashboardConfiguracoesRoute: typeof DashboardConfiguracoesRoute
+  DashboardDepoimentosRoute: typeof DashboardDepoimentosRoute
+  DashboardLeadsRoute: typeof DashboardLeadsRoute
+  DashboardResultadosRoute: typeof DashboardResultadosRoute
+  DashboardServicosRoute: typeof DashboardServicosRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
 }
 
@@ -82,12 +157,52 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/servicos': {
+      id: '/dashboard/servicos'
+      path: '/dashboard/servicos'
+      fullPath: '/dashboard/servicos'
+      preLoaderRoute: typeof DashboardServicosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/resultados': {
+      id: '/dashboard/resultados'
+      path: '/dashboard/resultados'
+      fullPath: '/dashboard/resultados'
+      preLoaderRoute: typeof DashboardResultadosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/leads': {
+      id: '/dashboard/leads'
+      path: '/dashboard/leads'
+      fullPath: '/dashboard/leads'
+      preLoaderRoute: typeof DashboardLeadsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/depoimentos': {
+      id: '/dashboard/depoimentos'
+      path: '/dashboard/depoimentos'
+      fullPath: '/dashboard/depoimentos'
+      preLoaderRoute: typeof DashboardDepoimentosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/configuracoes': {
+      id: '/dashboard/configuracoes'
+      path: '/dashboard/configuracoes'
+      fullPath: '/dashboard/configuracoes'
+      preLoaderRoute: typeof DashboardConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
+  DashboardConfiguracoesRoute: DashboardConfiguracoesRoute,
+  DashboardDepoimentosRoute: DashboardDepoimentosRoute,
+  DashboardLeadsRoute: DashboardLeadsRoute,
+  DashboardResultadosRoute: DashboardResultadosRoute,
+  DashboardServicosRoute: DashboardServicosRoute,
   DashboardIndexRoute: DashboardIndexRoute,
 }
 export const routeTree = rootRouteImport
