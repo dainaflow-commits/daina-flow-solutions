@@ -18,9 +18,11 @@ import { Route as PortalPerfilRouteImport } from './routes/portal.perfil'
 import { Route as PortalChatRouteImport } from './routes/portal.chat'
 import { Route as DashboardServicosRouteImport } from './routes/dashboard.servicos'
 import { Route as DashboardResultadosRouteImport } from './routes/dashboard.resultados'
+import { Route as DashboardProjetosRouteImport } from './routes/dashboard.projetos'
 import { Route as DashboardLeadsRouteImport } from './routes/dashboard.leads'
 import { Route as DashboardDepoimentosRouteImport } from './routes/dashboard.depoimentos'
 import { Route as DashboardConfiguracoesRouteImport } from './routes/dashboard.configuracoes'
+import { Route as DashboardClientesRouteImport } from './routes/dashboard.clientes'
 import { Route as ApiBootstrapAdminRouteImport } from './routes/api.bootstrap-admin'
 import { Route as PortalProjetosProjectIdRouteImport } from './routes/portal.projetos.$projectId'
 
@@ -69,6 +71,11 @@ const DashboardResultadosRoute = DashboardResultadosRouteImport.update({
   path: '/dashboard/resultados',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardProjetosRoute = DashboardProjetosRouteImport.update({
+  id: '/dashboard/projetos',
+  path: '/dashboard/projetos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardLeadsRoute = DashboardLeadsRouteImport.update({
   id: '/dashboard/leads',
   path: '/dashboard/leads',
@@ -82,6 +89,11 @@ const DashboardDepoimentosRoute = DashboardDepoimentosRouteImport.update({
 const DashboardConfiguracoesRoute = DashboardConfiguracoesRouteImport.update({
   id: '/dashboard/configuracoes',
   path: '/dashboard/configuracoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardClientesRoute = DashboardClientesRouteImport.update({
+  id: '/dashboard/clientes',
+  path: '/dashboard/clientes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiBootstrapAdminRoute = ApiBootstrapAdminRouteImport.update({
@@ -99,9 +111,11 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
+  '/dashboard/clientes': typeof DashboardClientesRoute
   '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/projetos': typeof DashboardProjetosRoute
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
   '/portal/chat': typeof PortalChatRoute
@@ -115,9 +129,11 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
+  '/dashboard/clientes': typeof DashboardClientesRoute
   '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/projetos': typeof DashboardProjetosRoute
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
   '/portal/chat': typeof PortalChatRoute
@@ -132,9 +148,11 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
+  '/dashboard/clientes': typeof DashboardClientesRoute
   '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/projetos': typeof DashboardProjetosRoute
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
   '/portal/chat': typeof PortalChatRoute
@@ -150,9 +168,11 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/api/bootstrap-admin'
+    | '/dashboard/clientes'
     | '/dashboard/configuracoes'
     | '/dashboard/depoimentos'
     | '/dashboard/leads'
+    | '/dashboard/projetos'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
     | '/portal/chat'
@@ -166,9 +186,11 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/api/bootstrap-admin'
+    | '/dashboard/clientes'
     | '/dashboard/configuracoes'
     | '/dashboard/depoimentos'
     | '/dashboard/leads'
+    | '/dashboard/projetos'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
     | '/portal/chat'
@@ -182,9 +204,11 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/api/bootstrap-admin'
+    | '/dashboard/clientes'
     | '/dashboard/configuracoes'
     | '/dashboard/depoimentos'
     | '/dashboard/leads'
+    | '/dashboard/projetos'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
     | '/portal/chat'
@@ -199,9 +223,11 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   ApiBootstrapAdminRoute: typeof ApiBootstrapAdminRoute
+  DashboardClientesRoute: typeof DashboardClientesRoute
   DashboardConfiguracoesRoute: typeof DashboardConfiguracoesRoute
   DashboardDepoimentosRoute: typeof DashboardDepoimentosRoute
   DashboardLeadsRoute: typeof DashboardLeadsRoute
+  DashboardProjetosRoute: typeof DashboardProjetosRoute
   DashboardResultadosRoute: typeof DashboardResultadosRoute
   DashboardServicosRoute: typeof DashboardServicosRoute
   PortalChatRoute: typeof PortalChatRoute
@@ -276,6 +302,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardResultadosRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/projetos': {
+      id: '/dashboard/projetos'
+      path: '/dashboard/projetos'
+      fullPath: '/dashboard/projetos'
+      preLoaderRoute: typeof DashboardProjetosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/leads': {
       id: '/dashboard/leads'
       path: '/dashboard/leads'
@@ -295,6 +328,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard/configuracoes'
       fullPath: '/dashboard/configuracoes'
       preLoaderRoute: typeof DashboardConfiguracoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/clientes': {
+      id: '/dashboard/clientes'
+      path: '/dashboard/clientes'
+      fullPath: '/dashboard/clientes'
+      preLoaderRoute: typeof DashboardClientesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/bootstrap-admin': {
@@ -330,9 +370,11 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   ApiBootstrapAdminRoute: ApiBootstrapAdminRoute,
+  DashboardClientesRoute: DashboardClientesRoute,
   DashboardConfiguracoesRoute: DashboardConfiguracoesRoute,
   DashboardDepoimentosRoute: DashboardDepoimentosRoute,
   DashboardLeadsRoute: DashboardLeadsRoute,
+  DashboardProjetosRoute: DashboardProjetosRoute,
   DashboardResultadosRoute: DashboardResultadosRoute,
   DashboardServicosRoute: DashboardServicosRoute,
   PortalChatRoute: PortalChatRoute,

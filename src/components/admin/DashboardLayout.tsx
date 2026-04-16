@@ -8,8 +8,12 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 
+import { Users, FolderKanban } from "lucide-react";
+
 const NAV = [
   { to: "/dashboard", label: "Visão geral", icon: LayoutDashboard },
+  { to: "/dashboard/clientes", label: "Clientes", icon: Users },
+  { to: "/dashboard/projetos", label: "Projetos", icon: FolderKanban },
   { to: "/dashboard/servicos", label: "Serviços", icon: Briefcase },
   { to: "/dashboard/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
   { to: "/dashboard/leads", label: "Leads", icon: Inbox },
@@ -25,7 +29,8 @@ export function DashboardLayout({ children }: { children?: ReactNode }) {
   useEffect(() => {
     if (loading) return;
     if (!session) navigate({ to: "/login" });
-  }, [session, loading, navigate]);
+    else if (!isAdmin) navigate({ to: "/portal" });
+  }, [session, loading, isAdmin, navigate]);
 
   if (loading || !session) {
     return (
