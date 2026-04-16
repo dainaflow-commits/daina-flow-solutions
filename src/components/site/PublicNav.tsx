@@ -1,7 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import logo from "@/assets/dainaflow-logo.png";
+import { BrandLogo } from "@/components/BrandLogo";
 import { useAuth } from "@/hooks/useAuth";
 import { LayoutDashboard, LogIn, LogOut, Menu, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -20,11 +20,8 @@ export function PublicNav() {
   return (
     <header className="sticky top-0 z-40 w-full border-b border-border/60 bg-background/80 backdrop-blur-xl">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
-        <Link to="/" className="flex items-center gap-2" onClick={() => setOpen(false)}>
-          <img src={logo} alt="Daina Flow" className="h-10 w-10 object-contain" />
-          <span className="font-display text-lg font-bold tracking-tight">
-            Daina <span className="text-gradient-brand">Flow</span>
-          </span>
+        <Link to="/" onClick={() => setOpen(false)}>
+          <BrandLogo size="md" />
         </Link>
 
         <nav className="hidden items-center gap-7 text-sm font-medium md:flex">
