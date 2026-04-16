@@ -17,6 +17,7 @@ import { Route as DashboardResultadosRouteImport } from './routes/dashboard.resu
 import { Route as DashboardLeadsRouteImport } from './routes/dashboard.leads'
 import { Route as DashboardDepoimentosRouteImport } from './routes/dashboard.depoimentos'
 import { Route as DashboardConfiguracoesRouteImport } from './routes/dashboard.configuracoes'
+import { Route as ApiBootstrapAdminRouteImport } from './routes/api.bootstrap-admin'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -58,10 +59,16 @@ const DashboardConfiguracoesRoute = DashboardConfiguracoesRouteImport.update({
   path: '/dashboard/configuracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiBootstrapAdminRoute = ApiBootstrapAdminRouteImport.update({
+  id: '/api/bootstrap-admin',
+  path: '/api/bootstrap-admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
   '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
@@ -72,6 +79,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
   '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
@@ -83,6 +91,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
   '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
@@ -95,6 +104,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/api/bootstrap-admin'
     | '/dashboard/configuracoes'
     | '/dashboard/depoimentos'
     | '/dashboard/leads'
@@ -105,6 +115,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/api/bootstrap-admin'
     | '/dashboard/configuracoes'
     | '/dashboard/depoimentos'
     | '/dashboard/leads'
@@ -115,6 +126,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/login'
+    | '/api/bootstrap-admin'
     | '/dashboard/configuracoes'
     | '/dashboard/depoimentos'
     | '/dashboard/leads'
@@ -126,6 +138,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
+  ApiBootstrapAdminRoute: typeof ApiBootstrapAdminRoute
   DashboardConfiguracoesRoute: typeof DashboardConfiguracoesRoute
   DashboardDepoimentosRoute: typeof DashboardDepoimentosRoute
   DashboardLeadsRoute: typeof DashboardLeadsRoute
@@ -192,12 +205,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/bootstrap-admin': {
+      id: '/api/bootstrap-admin'
+      path: '/api/bootstrap-admin'
+      fullPath: '/api/bootstrap-admin'
+      preLoaderRoute: typeof ApiBootstrapAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
+  ApiBootstrapAdminRoute: ApiBootstrapAdminRoute,
   DashboardConfiguracoesRoute: DashboardConfiguracoesRoute,
   DashboardDepoimentosRoute: DashboardDepoimentosRoute,
   DashboardLeadsRoute: DashboardLeadsRoute,
@@ -208,3 +229,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}
