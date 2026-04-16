@@ -8,6 +8,7 @@ import { ServicesSection } from "@/components/site/ServicesSection";
 import { ContactSection } from "@/components/site/ContactSection";
 import { Footer } from "@/components/site/Footer";
 import { WhatsappFloat } from "@/components/site/WhatsappFloat";
+import { ChatBot } from "@/components/site/ChatBot";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -35,6 +36,7 @@ function Index() {
       </main>
       <Footer />
       <WhatsappFloat />
+      <ChatBot />
     </div>
   );
 }
