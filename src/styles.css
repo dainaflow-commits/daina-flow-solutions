@@ -73,25 +73,25 @@
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.18 0.04 255);
 
-  /* Brand — Azul profundo (confiança + dados) */
-  --primary: oklch(0.42 0.18 265);
+  /* Brand — Azul vibrante (confiança + tecnologia) */
+  --primary: oklch(0.55 0.2 245);
   --primary-foreground: oklch(0.99 0.005 240);
-  --brand: oklch(0.42 0.18 265);
+  --brand: oklch(0.55 0.2 245);
   --brand-foreground: oklch(0.99 0.005 240);
 
   /* Secondary — superfície sutil */
-  --secondary: oklch(0.96 0.015 255);
-  --secondary-foreground: oklch(0.25 0.06 265);
+  --secondary: oklch(0.96 0.02 240);
+  --secondary-foreground: oklch(0.3 0.1 245);
 
-  --muted: oklch(0.965 0.012 250);
-  --muted-foreground: oklch(0.5 0.03 255);
+  --muted: oklch(0.965 0.015 240);
+  --muted-foreground: oklch(0.5 0.03 240);
 
-  --accent: oklch(0.94 0.04 240);
-  --accent-foreground: oklch(0.25 0.08 265);
+  --accent: oklch(0.95 0.05 65);
+  --accent-foreground: oklch(0.4 0.18 50);
 
-  /* Acentos tech */
-  --accent-cyan: oklch(0.72 0.14 215);
-  --accent-violet: oklch(0.62 0.2 295);
+  /* Acentos da logo: ciano + laranja/âmbar */
+  --accent-cyan: oklch(0.75 0.14 210);
+  --accent-violet: oklch(0.72 0.18 55);
 
   --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: oklch(0.99 0.005 240);
@@ -100,37 +100,37 @@
   --input: oklch(0.93 0.012 250);
   --ring: oklch(0.55 0.18 265);
 
-  --chart-1: oklch(0.55 0.2 265);
-  --chart-2: oklch(0.7 0.15 215);
-  --chart-3: oklch(0.65 0.2 295);
-  --chart-4: oklch(0.75 0.15 180);
-  --chart-5: oklch(0.7 0.18 30);
+  --chart-1: oklch(0.55 0.2 245);
+  --chart-2: oklch(0.72 0.14 210);
+  --chart-3: oklch(0.7 0.18 55);
+  --chart-4: oklch(0.68 0.2 35);
+  --chart-5: oklch(0.78 0.15 90);
 
   --sidebar: oklch(0.985 0.005 250);
   --sidebar-foreground: oklch(0.2 0.04 255);
-  --sidebar-primary: oklch(0.42 0.18 265);
+  --sidebar-primary: oklch(0.55 0.2 245);
   --sidebar-primary-foreground: oklch(0.99 0.005 240);
-  --sidebar-accent: oklch(0.95 0.02 255);
-  --sidebar-accent-foreground: oklch(0.25 0.08 265);
-  --sidebar-border: oklch(0.92 0.012 250);
-  --sidebar-ring: oklch(0.55 0.18 265);
+  --sidebar-accent: oklch(0.95 0.03 240);
+  --sidebar-accent-foreground: oklch(0.3 0.1 245);
+  --sidebar-border: oklch(0.92 0.012 240);
+  --sidebar-ring: oklch(0.55 0.2 245);
 
-  /* Gradientes & shadows premium */
-  --gradient-brand: linear-gradient(135deg, oklch(0.42 0.18 265), oklch(0.62 0.2 295));
-  --gradient-brand-soft: linear-gradient(135deg, oklch(0.96 0.04 265), oklch(0.95 0.05 295));
-  --gradient-hero: radial-gradient(ellipse at top right, oklch(0.94 0.06 295 / 0.6), transparent 60%),
-                   radial-gradient(ellipse at bottom left, oklch(0.93 0.07 215 / 0.5), transparent 55%),
+  /* Gradientes & shadows — paleta da logo (azul → ciano → laranja) */
+  --gradient-brand: linear-gradient(135deg, oklch(0.5 0.22 250) 0%, oklch(0.72 0.16 210) 50%, oklch(0.7 0.2 55) 100%);
+  --gradient-brand-soft: linear-gradient(135deg, oklch(0.95 0.05 245), oklch(0.95 0.06 60));
+  --gradient-hero: radial-gradient(ellipse at top right, oklch(0.92 0.08 55 / 0.55), transparent 60%),
+                   radial-gradient(ellipse at bottom left, oklch(0.92 0.09 230 / 0.55), transparent 55%),
                    oklch(0.99 0.005 240);
   --gradient-mesh: conic-gradient(from 180deg at 50% 50%,
-                   oklch(0.94 0.06 265 / 0.4),
-                   oklch(0.94 0.06 215 / 0.4),
-                   oklch(0.94 0.06 295 / 0.4),
-                   oklch(0.94 0.06 265 / 0.4));
+                   oklch(0.94 0.06 245 / 0.4),
+                   oklch(0.94 0.06 210 / 0.4),
+                   oklch(0.94 0.07 55 / 0.4),
+                   oklch(0.94 0.06 245 / 0.4));
 
-  --shadow-sm: 0 1px 2px 0 oklch(0.4 0.1 265 / 0.05);
-  --shadow-card: 0 4px 20px -4px oklch(0.4 0.1 265 / 0.08), 0 2px 6px -2px oklch(0.4 0.1 265 / 0.04);
-  --shadow-elegant: 0 20px 50px -12px oklch(0.42 0.18 265 / 0.18);
-  --shadow-glow: 0 0 60px -10px oklch(0.62 0.2 295 / 0.4);
+  --shadow-sm: 0 1px 2px 0 oklch(0.4 0.1 245 / 0.05);
+  --shadow-card: 0 4px 20px -4px oklch(0.4 0.1 245 / 0.08), 0 2px 6px -2px oklch(0.4 0.1 245 / 0.04);
+  --shadow-elegant: 0 20px 50px -12px oklch(0.55 0.2 245 / 0.2);
+  --shadow-glow: 0 0 60px -10px oklch(0.7 0.2 55 / 0.35);
 
   --transition-smooth: all 0.35s cubic-bezier(0.4, 0, 0.2, 1);
 }
