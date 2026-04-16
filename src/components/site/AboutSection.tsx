@@ -2,6 +2,7 @@ import heroImg from "@/assets/larissa-hero.jpg";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { MapPin, GraduationCap, Briefcase } from "lucide-react";
+import { motion } from "framer-motion";
 
 export function AboutSection() {
   const [photo, setPhoto] = useState<string>(heroImg);
@@ -14,18 +15,36 @@ export function AboutSection() {
   return (
     <section id="sobre" className="bg-background py-20 md:py-28">
       <div className="container mx-auto grid items-center gap-12 px-4 md:grid-cols-[1fr_1.2fr]">
-        <div className="relative mx-auto w-full max-w-sm">
-          <div className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-brand-soft" />
-          <img
+        <motion.div
+          className="relative mx-auto w-full max-w-sm"
+          initial={{ opacity: 0, x: -40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
+        >
+          <motion.div
+            className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-brand-soft"
+            animate={{ rotate: [0, 3, -3, 0] }}
+            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+          />
+          <motion.img
             src={photo}
             alt="Larissa Daina"
             loading="lazy"
             width={800} height={1000}
             className="aspect-[4/5] w-full rounded-[1.75rem] border border-border object-cover shadow-card"
+            whileHover={{ scale: 1.03 }}
+            transition={{ duration: 0.4 }}
           />
-        </div>
+        </motion.div>
 
-        <div className="space-y-6">
+        <motion.div
+          className="space-y-6"
+          initial={{ opacity: 0, x: 40 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
+        >
           <span className="inline-block rounded-full bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-wider text-secondary-foreground">
             Sobre mim
           </span>
@@ -50,7 +69,7 @@ export function AboutSection() {
             <InfoChip icon={<GraduationCap className="h-4 w-4" />} label="ADS · em curso" />
             <InfoChip icon={<MapPin className="h-4 w-4" />} label="Igarapé-MG" />
           </div>
-        </div>
+        </motion.div>
       </div>
     </section>
   );

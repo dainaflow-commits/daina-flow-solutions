@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getIcon } from "@/lib/icon-map";
 import { buildWhatsappLink, serviceMessage } from "@/lib/whatsapp";
 import { ArrowUpRight } from "lucide-react";
+import { motion } from "framer-motion";
 
 interface Service {
   id: string;
@@ -29,7 +30,13 @@ export function ServicesSection() {
   return (
     <section id="servicos" className="bg-background py-20 md:py-28">
       <div className="container mx-auto px-4">
-        <div className="mx-auto mb-12 max-w-2xl text-center">
+        <motion.div
+          className="mx-auto mb-12 max-w-2xl text-center"
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true, margin: "-80px" }}
+          transition={{ duration: 0.6 }}
+        >
           <span className="inline-block rounded-full bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-wider text-secondary-foreground">
             Serviços
           </span>
@@ -39,19 +46,28 @@ export function ServicesSection() {
           <p className="mt-3 text-muted-foreground">
             Escolha um serviço e fale comigo direto no WhatsApp para um diagnóstico gratuito.
           </p>
-        </div>
+        </motion.div>
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-          {services.map((s) => {
+          {services.map((s, i) => {
             const Icon = getIcon(s.icon);
             return (
-              <article
+              <motion.article
                 key={s.id}
-                className="group relative flex flex-col rounded-2xl border border-border bg-card p-6 shadow-card transition-smooth hover:-translate-y-1 hover:border-primary/30 hover:shadow-elegant"
+                initial={{ opacity: 0, y: 40 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true, margin: "-50px" }}
+                transition={{ duration: 0.5, delay: (i % 6) * 0.08 }}
+                whileHover={{ y: -8 }}
+                className="group relative flex flex-col rounded-2xl border border-border bg-card p-6 shadow-card transition-smooth hover:border-primary/30 hover:shadow-elegant"
               >
-                <div className="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-brand-soft transition-smooth group-hover:bg-gradient-brand">
+                <motion.div
+                  className="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-brand-soft transition-smooth group-hover:bg-gradient-brand"
+                  whileHover={{ rotate: 360 }}
+                  transition={{ duration: 0.7 }}
+                >
                   <Icon className="h-6 w-6 text-[color:var(--accent-violet)] transition-smooth group-hover:text-primary-foreground" />
-                </div>
+                </motion.div>
                 <h3 className="mb-2 font-display text-lg font-semibold">{s.title}</h3>
                 <p className="mb-6 flex-1 text-sm leading-relaxed text-muted-foreground">{s.description}</p>
                 <a
@@ -60,9 +76,9 @@ export function ServicesSection() {
                   className="inline-flex items-center justify-between gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-semibold text-secondary-foreground transition-smooth hover:bg-gradient-brand hover:text-primary-foreground"
                 >
                   Quero este serviço
-                  <ArrowUpRight className="h-4 w-4" />
+                  <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
                 </a>
-              </article>
+              </motion.article>
             );
           })}
         </div>
