@@ -6,6 +6,7 @@ export interface AuthState {
   session: Session | null;
   user: User | null;
   isAdmin: boolean;
+  fullName: string | null;
   loading: boolean;
 }
 
@@ -45,5 +46,11 @@ export function useAuth(): AuthState {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  return { session, user: session?.user ?? null, isAdmin, loading };
+  const fullName =
+    (session?.user?.user_metadata?.full_name as string | undefined) ??
+    (session?.user?.user_metadata?.name as string | undefined) ??
+    session?.user?.email?.split("@")[0] ??
+    null;
+
+  return { session, user: session?.user ?? null, isAdmin, fullName, loading };
 }

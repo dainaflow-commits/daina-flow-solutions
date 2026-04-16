@@ -11,12 +11,20 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as PortalProjetosRouteImport } from './routes/portal.projetos'
+import { Route as PortalPerfilRouteImport } from './routes/portal.perfil'
+import { Route as PortalChatRouteImport } from './routes/portal.chat'
 import { Route as DashboardServicosRouteImport } from './routes/dashboard.servicos'
 import { Route as DashboardResultadosRouteImport } from './routes/dashboard.resultados'
+import { Route as DashboardProjetosRouteImport } from './routes/dashboard.projetos'
 import { Route as DashboardLeadsRouteImport } from './routes/dashboard.leads'
 import { Route as DashboardDepoimentosRouteImport } from './routes/dashboard.depoimentos'
 import { Route as DashboardConfiguracoesRouteImport } from './routes/dashboard.configuracoes'
+import { Route as DashboardClientesRouteImport } from './routes/dashboard.clientes'
+import { Route as ApiBootstrapAdminRouteImport } from './routes/api.bootstrap-admin'
+import { Route as PortalProjetosProjectIdRouteImport } from './routes/portal.projetos.$projectId'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -28,9 +36,29 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PortalIndexRoute = PortalIndexRouteImport.update({
+  id: '/portal/',
+  path: '/portal/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalProjetosRoute = PortalProjetosRouteImport.update({
+  id: '/portal/projetos',
+  path: '/portal/projetos',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalPerfilRoute = PortalPerfilRouteImport.update({
+  id: '/portal/perfil',
+  path: '/portal/perfil',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalChatRoute = PortalChatRouteImport.update({
+  id: '/portal/chat',
+  path: '/portal/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardServicosRoute = DashboardServicosRouteImport.update({
@@ -41,6 +69,11 @@ const DashboardServicosRoute = DashboardServicosRouteImport.update({
 const DashboardResultadosRoute = DashboardResultadosRouteImport.update({
   id: '/dashboard/resultados',
   path: '/dashboard/resultados',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardProjetosRoute = DashboardProjetosRouteImport.update({
+  id: '/dashboard/projetos',
+  path: '/dashboard/projetos',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardLeadsRoute = DashboardLeadsRouteImport.update({
@@ -58,80 +91,150 @@ const DashboardConfiguracoesRoute = DashboardConfiguracoesRouteImport.update({
   path: '/dashboard/configuracoes',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardClientesRoute = DashboardClientesRouteImport.update({
+  id: '/dashboard/clientes',
+  path: '/dashboard/clientes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiBootstrapAdminRoute = ApiBootstrapAdminRouteImport.update({
+  id: '/api/bootstrap-admin',
+  path: '/api/bootstrap-admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PortalProjetosProjectIdRoute = PortalProjetosProjectIdRouteImport.update({
+  id: '/$projectId',
+  path: '/$projectId',
+  getParentRoute: () => PortalProjetosRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
+  '/dashboard/clientes': typeof DashboardClientesRoute
   '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/projetos': typeof DashboardProjetosRoute
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
+  '/portal/chat': typeof PortalChatRoute
+  '/portal/perfil': typeof PortalPerfilRoute
+  '/portal/projetos': typeof PortalProjetosRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
+  '/portal/': typeof PortalIndexRoute
+  '/portal/projetos/$projectId': typeof PortalProjetosProjectIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
+  '/dashboard/clientes': typeof DashboardClientesRoute
   '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/projetos': typeof DashboardProjetosRoute
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
+  '/portal/chat': typeof PortalChatRoute
+  '/portal/perfil': typeof PortalPerfilRoute
+  '/portal/projetos': typeof PortalProjetosRouteWithChildren
   '/dashboard': typeof DashboardIndexRoute
+  '/portal': typeof PortalIndexRoute
+  '/portal/projetos/$projectId': typeof PortalProjetosProjectIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
+  '/dashboard/clientes': typeof DashboardClientesRoute
   '/dashboard/configuracoes': typeof DashboardConfiguracoesRoute
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/projetos': typeof DashboardProjetosRoute
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
+  '/portal/chat': typeof PortalChatRoute
+  '/portal/perfil': typeof PortalPerfilRoute
+  '/portal/projetos': typeof PortalProjetosRouteWithChildren
   '/dashboard/': typeof DashboardIndexRoute
+  '/portal/': typeof PortalIndexRoute
+  '/portal/projetos/$projectId': typeof PortalProjetosProjectIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
     | '/login'
+    | '/api/bootstrap-admin'
+    | '/dashboard/clientes'
     | '/dashboard/configuracoes'
     | '/dashboard/depoimentos'
     | '/dashboard/leads'
+    | '/dashboard/projetos'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
+    | '/portal/chat'
+    | '/portal/perfil'
+    | '/portal/projetos'
     | '/dashboard/'
+    | '/portal/'
+    | '/portal/projetos/$projectId'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/login'
+    | '/api/bootstrap-admin'
+    | '/dashboard/clientes'
     | '/dashboard/configuracoes'
     | '/dashboard/depoimentos'
     | '/dashboard/leads'
+    | '/dashboard/projetos'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
+    | '/portal/chat'
+    | '/portal/perfil'
+    | '/portal/projetos'
     | '/dashboard'
+    | '/portal'
+    | '/portal/projetos/$projectId'
   id:
     | '__root__'
     | '/'
     | '/login'
+    | '/api/bootstrap-admin'
+    | '/dashboard/clientes'
     | '/dashboard/configuracoes'
     | '/dashboard/depoimentos'
     | '/dashboard/leads'
+    | '/dashboard/projetos'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
+    | '/portal/chat'
+    | '/portal/perfil'
+    | '/portal/projetos'
     | '/dashboard/'
+    | '/portal/'
+    | '/portal/projetos/$projectId'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
+  ApiBootstrapAdminRoute: typeof ApiBootstrapAdminRoute
+  DashboardClientesRoute: typeof DashboardClientesRoute
   DashboardConfiguracoesRoute: typeof DashboardConfiguracoesRoute
   DashboardDepoimentosRoute: typeof DashboardDepoimentosRoute
   DashboardLeadsRoute: typeof DashboardLeadsRoute
+  DashboardProjetosRoute: typeof DashboardProjetosRoute
   DashboardResultadosRoute: typeof DashboardResultadosRoute
   DashboardServicosRoute: typeof DashboardServicosRoute
+  PortalChatRoute: typeof PortalChatRoute
+  PortalPerfilRoute: typeof PortalPerfilRoute
+  PortalProjetosRoute: typeof PortalProjetosRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
+  PortalIndexRoute: typeof PortalIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -150,11 +253,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/portal/': {
+      id: '/portal/'
+      path: '/portal'
+      fullPath: '/portal/'
+      preLoaderRoute: typeof PortalIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/': {
       id: '/dashboard/'
       path: '/dashboard'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal/projetos': {
+      id: '/portal/projetos'
+      path: '/portal/projetos'
+      fullPath: '/portal/projetos'
+      preLoaderRoute: typeof PortalProjetosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal/perfil': {
+      id: '/portal/perfil'
+      path: '/portal/perfil'
+      fullPath: '/portal/perfil'
+      preLoaderRoute: typeof PortalPerfilRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal/chat': {
+      id: '/portal/chat'
+      path: '/portal/chat'
+      fullPath: '/portal/chat'
+      preLoaderRoute: typeof PortalChatRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/servicos': {
@@ -169,6 +300,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard/resultados'
       fullPath: '/dashboard/resultados'
       preLoaderRoute: typeof DashboardResultadosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/projetos': {
+      id: '/dashboard/projetos'
+      path: '/dashboard/projetos'
+      fullPath: '/dashboard/projetos'
+      preLoaderRoute: typeof DashboardProjetosRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/leads': {
@@ -192,28 +330,59 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardConfiguracoesRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/dashboard/clientes': {
+      id: '/dashboard/clientes'
+      path: '/dashboard/clientes'
+      fullPath: '/dashboard/clientes'
+      preLoaderRoute: typeof DashboardClientesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/bootstrap-admin': {
+      id: '/api/bootstrap-admin'
+      path: '/api/bootstrap-admin'
+      fullPath: '/api/bootstrap-admin'
+      preLoaderRoute: typeof ApiBootstrapAdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/portal/projetos/$projectId': {
+      id: '/portal/projetos/$projectId'
+      path: '/$projectId'
+      fullPath: '/portal/projetos/$projectId'
+      preLoaderRoute: typeof PortalProjetosProjectIdRouteImport
+      parentRoute: typeof PortalProjetosRoute
+    }
   }
 }
+
+interface PortalProjetosRouteChildren {
+  PortalProjetosProjectIdRoute: typeof PortalProjetosProjectIdRoute
+}
+
+const PortalProjetosRouteChildren: PortalProjetosRouteChildren = {
+  PortalProjetosProjectIdRoute: PortalProjetosProjectIdRoute,
+}
+
+const PortalProjetosRouteWithChildren = PortalProjetosRoute._addFileChildren(
+  PortalProjetosRouteChildren,
+)
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
+  ApiBootstrapAdminRoute: ApiBootstrapAdminRoute,
+  DashboardClientesRoute: DashboardClientesRoute,
   DashboardConfiguracoesRoute: DashboardConfiguracoesRoute,
   DashboardDepoimentosRoute: DashboardDepoimentosRoute,
   DashboardLeadsRoute: DashboardLeadsRoute,
+  DashboardProjetosRoute: DashboardProjetosRoute,
   DashboardResultadosRoute: DashboardResultadosRoute,
   DashboardServicosRoute: DashboardServicosRoute,
+  PortalChatRoute: PortalChatRoute,
+  PortalPerfilRoute: PortalPerfilRoute,
+  PortalProjetosRoute: PortalProjetosRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
+  PortalIndexRoute: PortalIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { createStart } from '@tanstack/react-start'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-  }
-}
