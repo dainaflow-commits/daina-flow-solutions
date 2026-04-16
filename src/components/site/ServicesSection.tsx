@@ -1,0 +1,72 @@
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { getIcon } from "@/lib/icon-map";
+import { buildWhatsappLink, serviceMessage } from "@/lib/whatsapp";
+import { ArrowUpRight } from "lucide-react";
+
+interface Service {
+  id: string;
+  title: string;
+  description: string;
+  icon: string;
+}
+
+export function ServicesSection() {
+  const [services, setServices] = useState<Service[]>([]);
+  const [whatsapp, setWhatsapp] = useState<string | undefined>();
+
+  useEffect(() => {
+    supabase
+      .from("services")
+      .select("id,title,description,icon")
+      .eq("active", true)
+      .order("display_order")
+      .then(({ data }) => setServices(data ?? []));
+    supabase.from("site_settings").select("value").eq("key", "whatsapp_number").maybeSingle()
+      .then(({ data }) => setWhatsapp(data?.value || undefined));
+  }, []);
+
+  return (
+    <section id="servicos" className="bg-background py-20 md:py-28">
+      <div className="container mx-auto px-4">
+        <div className="mx-auto mb-12 max-w-2xl text-center">
+          <span className="inline-block rounded-full bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-wider text-secondary-foreground">
+            Serviços
+          </span>
+          <h2 className="mt-4 font-display text-3xl font-bold md:text-4xl">
+            Soluções para <span className="text-gradient-brand">cada etapa</span> do seu negócio
+          </h2>
+          <p className="mt-3 text-muted-foreground">
+            Escolha um serviço e fale comigo direto no WhatsApp para um diagnóstico gratuito.
+          </p>
+        </div>
+
+        <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+          {services.map((s) => {
+            const Icon = getIcon(s.icon);
+            return (
+              <article
+                key={s.id}
+                className="group relative flex flex-col rounded-2xl border border-border bg-card p-6 shadow-card transition-smooth hover:-translate-y-1 hover:border-primary/30 hover:shadow-elegant"
+              >
+                <div className="mb-5 grid h-14 w-14 place-items-center rounded-2xl bg-gradient-brand-soft transition-smooth group-hover:bg-gradient-brand">
+                  <Icon className="h-6 w-6 text-[color:var(--accent-violet)] transition-smooth group-hover:text-primary-foreground" />
+                </div>
+                <h3 className="mb-2 font-display text-lg font-semibold">{s.title}</h3>
+                <p className="mb-6 flex-1 text-sm leading-relaxed text-muted-foreground">{s.description}</p>
+                <a
+                  href={buildWhatsappLink(serviceMessage(s.title), whatsapp)}
+                  target="_blank" rel="noreferrer"
+                  className="inline-flex items-center justify-between gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-semibold text-secondary-foreground transition-smooth hover:bg-gradient-brand hover:text-primary-foreground"
+                >
+                  Quero este serviço
+                  <ArrowUpRight className="h-4 w-4" />
+                </a>
+              </article>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
