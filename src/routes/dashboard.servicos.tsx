@@ -10,7 +10,10 @@ export const Route = createFileRoute("/dashboard/servicos")({
   component: () => <DashboardLayout><ServicesAdmin /></DashboardLayout>,
 });
 
-interface Service { id: string; title: string; description: string; icon: string; display_order: number; active: boolean; }
+interface Service {
+  id: string; title: string; description: string; icon: string;
+  display_order: number; active: boolean; price_text: string | null;
+}
 
 function ServicesAdmin() {
   const [items, setItems] = useState<Service[]>([]);
@@ -19,7 +22,7 @@ function ServicesAdmin() {
   async function load() {
     setLoading(true);
     const { data } = await supabase.from("services").select("*").order("display_order");
-    setItems(data ?? []);
+    setItems((data as Service[]) ?? []);
     setLoading(false);
   }
   useEffect(() => { load(); }, []);
@@ -27,7 +30,7 @@ function ServicesAdmin() {
   async function addNew() {
     const { error } = await supabase.from("services").insert({
       title: "Novo serviço", description: "Descrição", icon: "sparkles",
-      display_order: items.length + 1,
+      display_order: items.length + 1, price_text: "",
     });
     if (error) toast.error(error.message); else { toast.success("Serviço criado"); load(); }
   }
@@ -35,7 +38,7 @@ function ServicesAdmin() {
   async function update(s: Service) {
     const { error } = await supabase.from("services").update({
       title: s.title, description: s.description, icon: s.icon,
-      display_order: s.display_order, active: s.active,
+      display_order: s.display_order, active: s.active, price_text: s.price_text || null,
     }).eq("id", s.id);
     if (error) toast.error(error.message); else toast.success("Salvo");
   }
@@ -62,7 +65,7 @@ function ServicesAdmin() {
           {items.map((s, idx) => {
             const Icon = getIcon(s.icon);
             return (
-              <div key={s.id} className="rounded-2xl border border-border bg-card p-5 shadow-card space-y-3">
+              <div key={s.id} className="space-y-3 rounded-2xl border border-border bg-card p-5 shadow-card">
                 <div className="flex items-start gap-3">
                   <span className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-brand-soft">
                     <Icon className="h-5 w-5 text-[color:var(--accent-violet)]" />
@@ -78,6 +81,17 @@ function ServicesAdmin() {
                   onChange={(e) => setItems(items.map((x, i) => i === idx ? { ...x, description: e.target.value } : x))}
                   className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
                 />
+                <div>
+                  <label className="mb-1 block text-xs font-medium text-muted-foreground">
+                    Preço (texto livre — ex: "A partir de R$ 100", "Sob consulta")
+                  </label>
+                  <input
+                    value={s.price_text ?? ""}
+                    placeholder="Deixe vazio para não exibir preço"
+                    onChange={(e) => setItems(items.map((x, i) => i === idx ? { ...x, price_text: e.target.value } : x))}
+                    className="w-full rounded-lg border border-input bg-background px-3 py-2 text-sm"
+                  />
+                </div>
                 <div className="grid grid-cols-2 gap-2">
                   <select
                     value={s.icon}
