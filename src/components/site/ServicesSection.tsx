@@ -6,10 +6,7 @@ import { ArrowUpRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Service {
-  id: string;
-  title: string;
-  description: string;
-  icon: string;
+  id: string; title: string; description: string; icon: string; price_text: string | null;
 }
 
 export function ServicesSection() {
@@ -19,10 +16,10 @@ export function ServicesSection() {
   useEffect(() => {
     supabase
       .from("services")
-      .select("id,title,description,icon")
+      .select("id,title,description,icon,price_text")
       .eq("active", true)
       .order("display_order")
-      .then(({ data }) => setServices(data ?? []));
+      .then(({ data }) => setServices((data as Service[]) ?? []));
     supabase.from("site_settings").select("value").eq("key", "whatsapp_number").maybeSingle()
       .then(({ data }) => setWhatsapp(data?.value || undefined));
   }, []);
@@ -69,7 +66,12 @@ export function ServicesSection() {
                   <Icon className="h-6 w-6 text-[color:var(--accent-violet)] transition-smooth group-hover:text-primary-foreground" />
                 </motion.div>
                 <h3 className="mb-2 font-display text-lg font-semibold">{s.title}</h3>
-                <p className="mb-6 flex-1 text-sm leading-relaxed text-muted-foreground">{s.description}</p>
+                <p className="mb-4 flex-1 text-sm leading-relaxed text-muted-foreground">{s.description}</p>
+                {s.price_text && (
+                  <p className="mb-4 inline-flex w-fit items-center rounded-full bg-gradient-brand-soft px-3 py-1 text-xs font-bold text-[color:var(--accent-violet)]">
+                    {s.price_text}
+                  </p>
+                )}
                 <a
                   href={buildWhatsappLink(serviceMessage(s.title), whatsapp)}
                   target="_blank" rel="noreferrer"
