@@ -38,7 +38,7 @@ export function NotificationBell() {
     })();
 
     const channel = supabase
-      .channel(`notif-${user.id}`)
+      .channel(`notif-${user.id}-${Math.random().toString(36).slice(2)}`)
       .on(
         "postgres_changes",
         { event: "INSERT", schema: "public", table: "notifications", filter: `user_id=eq.${user.id}` },
@@ -93,8 +93,8 @@ export function NotificationBell() {
             <div className="px-4 py-10 text-center text-sm text-muted-foreground">Você não tem notificações.</div>
           ) : (
             items.map((n) => {
-              const Wrap: any = n.link ? Link : "div";
-              const props: any = n.link ? { to: n.link } : {};
+              const Wrap: any = n.link ? "a" : "div";
+              const props: any = n.link ? { href: n.link } : {};
               return (
                 <Wrap
                   key={n.id}
@@ -119,12 +119,12 @@ export function NotificationBell() {
             })
           )}
         </div>
-        <Link
-          to={settingsHref}
+        <a
+          href={settingsHref}
           className="block border-t border-border px-4 py-2.5 text-center text-xs font-semibold text-primary hover:bg-secondary"
         >
           Preferências de notificações
-        </Link>
+        </a>
       </DropdownMenuContent>
     </DropdownMenu>
   );
