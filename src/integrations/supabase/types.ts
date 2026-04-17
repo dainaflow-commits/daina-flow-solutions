@@ -50,6 +50,88 @@ export type Database = {
         }
         Relationships: []
       }
+      contracts: {
+        Row: {
+          body: string
+          client_id: string
+          created_at: string
+          id: string
+          project_id: string | null
+          proposal_id: string | null
+          sent_at: string | null
+          sign_token: string | null
+          signature_data: string | null
+          signed_at: string | null
+          signer_email: string | null
+          signer_ip: string | null
+          signer_name: string | null
+          status: string
+          title: string
+          total: number
+          updated_at: string
+        }
+        Insert: {
+          body?: string
+          client_id: string
+          created_at?: string
+          id?: string
+          project_id?: string | null
+          proposal_id?: string | null
+          sent_at?: string | null
+          sign_token?: string | null
+          signature_data?: string | null
+          signed_at?: string | null
+          signer_email?: string | null
+          signer_ip?: string | null
+          signer_name?: string | null
+          status?: string
+          title: string
+          total?: number
+          updated_at?: string
+        }
+        Update: {
+          body?: string
+          client_id?: string
+          created_at?: string
+          id?: string
+          project_id?: string | null
+          proposal_id?: string | null
+          sent_at?: string | null
+          sign_token?: string | null
+          signature_data?: string | null
+          signed_at?: string | null
+          signer_email?: string | null
+          signer_ip?: string | null
+          signer_name?: string | null
+          status?: string
+          title?: string
+          total?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "contracts_client_id_fkey"
+            columns: ["client_id"]
+            isOneToOne: false
+            referencedRelation: "clients"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_project_id_fkey"
+            columns: ["project_id"]
+            isOneToOne: false
+            referencedRelation: "projects"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "contracts_proposal_id_fkey"
+            columns: ["proposal_id"]
+            isOneToOne: false
+            referencedRelation: "proposals"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       leads: {
         Row: {
           created_at: string
@@ -152,6 +234,45 @@ export type Database = {
           title?: string
           type?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      portfolio_items: {
+        Row: {
+          active: boolean
+          category: string | null
+          cover_url: string | null
+          created_at: string
+          description: string | null
+          display_order: number
+          id: string
+          link_url: string | null
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          active?: boolean
+          category?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          link_url?: string | null
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          active?: boolean
+          category?: string | null
+          cover_url?: string | null
+          created_at?: string
+          description?: string | null
+          display_order?: number
+          id?: string
+          link_url?: string | null
+          title?: string
+          updated_at?: string
         }
         Relationships: []
       }
@@ -447,6 +568,7 @@ export type Database = {
           display_order: number
           icon: string
           id: string
+          price_text: string | null
           title: string
           updated_at: string
         }
@@ -457,6 +579,7 @@ export type Database = {
           display_order?: number
           icon?: string
           id?: string
+          price_text?: string | null
           title: string
           updated_at?: string
         }
@@ -467,6 +590,7 @@ export type Database = {
           display_order?: number
           icon?: string
           id?: string
+          price_text?: string | null
           title?: string
           updated_at?: string
         }
