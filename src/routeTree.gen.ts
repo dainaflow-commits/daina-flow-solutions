@@ -20,12 +20,14 @@ import { Route as PortalPerfilRouteImport } from './routes/portal.perfil'
 import { Route as PortalNotificacoesRouteImport } from './routes/portal.notificacoes'
 import { Route as PortalContratosRouteImport } from './routes/portal.contratos'
 import { Route as PortalChatRouteImport } from './routes/portal.chat'
+import { Route as LegalSlugRouteImport } from './routes/legal.$slug'
 import { Route as DashboardServicosRouteImport } from './routes/dashboard.servicos'
 import { Route as DashboardResultadosRouteImport } from './routes/dashboard.resultados'
 import { Route as DashboardPropostasRouteImport } from './routes/dashboard.propostas'
 import { Route as DashboardProjetosRouteImport } from './routes/dashboard.projetos'
 import { Route as DashboardPortfolioRouteImport } from './routes/dashboard.portfolio'
 import { Route as DashboardNotificacoesRouteImport } from './routes/dashboard.notificacoes'
+import { Route as DashboardLegalRouteImport } from './routes/dashboard.legal'
 import { Route as DashboardLeadsRouteImport } from './routes/dashboard.leads'
 import { Route as DashboardFluxoCaixaRouteImport } from './routes/dashboard.fluxo-caixa'
 import { Route as DashboardDepoimentosRouteImport } from './routes/dashboard.depoimentos'
@@ -97,6 +99,11 @@ const PortalChatRoute = PortalChatRouteImport.update({
   path: '/portal/chat',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LegalSlugRoute = LegalSlugRouteImport.update({
+  id: '/legal/$slug',
+  path: '/legal/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardServicosRoute = DashboardServicosRouteImport.update({
   id: '/dashboard/servicos',
   path: '/dashboard/servicos',
@@ -125,6 +132,11 @@ const DashboardPortfolioRoute = DashboardPortfolioRouteImport.update({
 const DashboardNotificacoesRoute = DashboardNotificacoesRouteImport.update({
   id: '/dashboard/notificacoes',
   path: '/dashboard/notificacoes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardLegalRoute = DashboardLegalRouteImport.update({
+  id: '/dashboard/legal',
+  path: '/dashboard/legal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardLeadsRoute = DashboardLeadsRouteImport.update({
@@ -217,12 +229,14 @@ export interface FileRoutesByFullPath {
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
   '/dashboard/fluxo-caixa': typeof DashboardFluxoCaixaRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/legal': typeof DashboardLegalRoute
   '/dashboard/notificacoes': typeof DashboardNotificacoesRoute
   '/dashboard/portfolio': typeof DashboardPortfolioRoute
   '/dashboard/projetos': typeof DashboardProjetosRoute
   '/dashboard/propostas': typeof DashboardPropostasRouteWithChildren
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
+  '/legal/$slug': typeof LegalSlugRoute
   '/portal/chat': typeof PortalChatRoute
   '/portal/contratos': typeof PortalContratosRoute
   '/portal/notificacoes': typeof PortalNotificacoesRoute
@@ -251,12 +265,14 @@ export interface FileRoutesByTo {
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
   '/dashboard/fluxo-caixa': typeof DashboardFluxoCaixaRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/legal': typeof DashboardLegalRoute
   '/dashboard/notificacoes': typeof DashboardNotificacoesRoute
   '/dashboard/portfolio': typeof DashboardPortfolioRoute
   '/dashboard/projetos': typeof DashboardProjetosRoute
   '/dashboard/propostas': typeof DashboardPropostasRouteWithChildren
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
+  '/legal/$slug': typeof LegalSlugRoute
   '/portal/chat': typeof PortalChatRoute
   '/portal/contratos': typeof PortalContratosRoute
   '/portal/notificacoes': typeof PortalNotificacoesRoute
@@ -286,12 +302,14 @@ export interface FileRoutesById {
   '/dashboard/depoimentos': typeof DashboardDepoimentosRoute
   '/dashboard/fluxo-caixa': typeof DashboardFluxoCaixaRoute
   '/dashboard/leads': typeof DashboardLeadsRoute
+  '/dashboard/legal': typeof DashboardLegalRoute
   '/dashboard/notificacoes': typeof DashboardNotificacoesRoute
   '/dashboard/portfolio': typeof DashboardPortfolioRoute
   '/dashboard/projetos': typeof DashboardProjetosRoute
   '/dashboard/propostas': typeof DashboardPropostasRouteWithChildren
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
+  '/legal/$slug': typeof LegalSlugRoute
   '/portal/chat': typeof PortalChatRoute
   '/portal/contratos': typeof PortalContratosRoute
   '/portal/notificacoes': typeof PortalNotificacoesRoute
@@ -322,12 +340,14 @@ export interface FileRouteTypes {
     | '/dashboard/depoimentos'
     | '/dashboard/fluxo-caixa'
     | '/dashboard/leads'
+    | '/dashboard/legal'
     | '/dashboard/notificacoes'
     | '/dashboard/portfolio'
     | '/dashboard/projetos'
     | '/dashboard/propostas'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
+    | '/legal/$slug'
     | '/portal/chat'
     | '/portal/contratos'
     | '/portal/notificacoes'
@@ -356,12 +376,14 @@ export interface FileRouteTypes {
     | '/dashboard/depoimentos'
     | '/dashboard/fluxo-caixa'
     | '/dashboard/leads'
+    | '/dashboard/legal'
     | '/dashboard/notificacoes'
     | '/dashboard/portfolio'
     | '/dashboard/projetos'
     | '/dashboard/propostas'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
+    | '/legal/$slug'
     | '/portal/chat'
     | '/portal/contratos'
     | '/portal/notificacoes'
@@ -390,12 +412,14 @@ export interface FileRouteTypes {
     | '/dashboard/depoimentos'
     | '/dashboard/fluxo-caixa'
     | '/dashboard/leads'
+    | '/dashboard/legal'
     | '/dashboard/notificacoes'
     | '/dashboard/portfolio'
     | '/dashboard/projetos'
     | '/dashboard/propostas'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
+    | '/legal/$slug'
     | '/portal/chat'
     | '/portal/contratos'
     | '/portal/notificacoes'
@@ -425,12 +449,14 @@ export interface RootRouteChildren {
   DashboardDepoimentosRoute: typeof DashboardDepoimentosRoute
   DashboardFluxoCaixaRoute: typeof DashboardFluxoCaixaRoute
   DashboardLeadsRoute: typeof DashboardLeadsRoute
+  DashboardLegalRoute: typeof DashboardLegalRoute
   DashboardNotificacoesRoute: typeof DashboardNotificacoesRoute
   DashboardPortfolioRoute: typeof DashboardPortfolioRoute
   DashboardProjetosRoute: typeof DashboardProjetosRoute
   DashboardPropostasRoute: typeof DashboardPropostasRouteWithChildren
   DashboardResultadosRoute: typeof DashboardResultadosRoute
   DashboardServicosRoute: typeof DashboardServicosRoute
+  LegalSlugRoute: typeof LegalSlugRoute
   PortalChatRoute: typeof PortalChatRoute
   PortalContratosRoute: typeof PortalContratosRoute
   PortalNotificacoesRoute: typeof PortalNotificacoesRoute
@@ -521,6 +547,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof PortalChatRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/legal/$slug': {
+      id: '/legal/$slug'
+      path: '/legal/$slug'
+      fullPath: '/legal/$slug'
+      preLoaderRoute: typeof LegalSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/dashboard/servicos': {
       id: '/dashboard/servicos'
       path: '/dashboard/servicos'
@@ -561,6 +594,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard/notificacoes'
       fullPath: '/dashboard/notificacoes'
       preLoaderRoute: typeof DashboardNotificacoesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/legal': {
+      id: '/dashboard/legal'
+      path: '/dashboard/legal'
+      fullPath: '/dashboard/legal'
+      preLoaderRoute: typeof DashboardLegalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/leads': {
@@ -731,12 +771,14 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardDepoimentosRoute: DashboardDepoimentosRoute,
   DashboardFluxoCaixaRoute: DashboardFluxoCaixaRoute,
   DashboardLeadsRoute: DashboardLeadsRoute,
+  DashboardLegalRoute: DashboardLegalRoute,
   DashboardNotificacoesRoute: DashboardNotificacoesRoute,
   DashboardPortfolioRoute: DashboardPortfolioRoute,
   DashboardProjetosRoute: DashboardProjetosRoute,
   DashboardPropostasRoute: DashboardPropostasRouteWithChildren,
   DashboardResultadosRoute: DashboardResultadosRoute,
   DashboardServicosRoute: DashboardServicosRoute,
+  LegalSlugRoute: LegalSlugRoute,
   PortalChatRoute: PortalChatRoute,
   PortalContratosRoute: PortalContratosRoute,
   PortalNotificacoesRoute: PortalNotificacoesRoute,
