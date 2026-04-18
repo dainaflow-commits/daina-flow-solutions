@@ -466,6 +466,7 @@ export type Database = {
       }
       proposals: {
         Row: {
+          body_markdown: string | null
           client_id: string
           created_at: string
           id: string
@@ -481,6 +482,7 @@ export type Database = {
           valid_until: string | null
         }
         Insert: {
+          body_markdown?: string | null
           client_id: string
           created_at?: string
           id?: string
@@ -496,6 +498,7 @@ export type Database = {
           valid_until?: string | null
         }
         Update: {
+          body_markdown?: string | null
           client_id?: string
           created_at?: string
           id?: string
