@@ -168,6 +168,27 @@ export type Database = {
         }
         Relationships: []
       }
+      legal_documents: {
+        Row: {
+          content_markdown: string
+          slug: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          content_markdown?: string
+          slug: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          content_markdown?: string
+          slug?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           email_messages: boolean
