@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Loader2, ArrowLeft, FileDown, Check, X } from "lucide-react";
 import { toast } from "sonner";
-import { generateProposalPdf } from "@/lib/proposalPdf";
+import { generateProposalPdf } from "@/lib/documentPdf";
 import SignatureCanvas from "react-signature-canvas";
 
 export const Route = createFileRoute("/portal/propostas/$id")({

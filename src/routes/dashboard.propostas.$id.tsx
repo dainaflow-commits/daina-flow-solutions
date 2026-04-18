@@ -2,9 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/admin/DashboardLayout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Plus, Trash2, Save, ArrowLeft, FileDown, Send } from "lucide-react";
+import { Loader2, Plus, Trash2, Save, ArrowLeft, FileDown, Send, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { generateProposalPdf } from "@/lib/proposalPdf";
+import { generateProposalPdf } from "@/lib/documentPdf";
+import { AIDocumentWizard, type BriefingResult } from "@/components/admin/AIDocumentWizard";
 
 export const Route = createFileRoute("/dashboard/propostas/$id")({
   head: () => ({ meta: [{ title: "Editar Proposta — Admin" }] }),
@@ -13,10 +14,11 @@ export const Route = createFileRoute("/dashboard/propostas/$id")({
 
 interface Item { id?: string; description: string; quantity: number; unit_price: number; position: number; }
 interface Proposal {
-  id: string; title: string; intro: string | null; valid_until: string | null;
+  id: string; title: string; intro: string | null; body_markdown: string | null;
+  valid_until: string | null;
   total: number; status: string; client_id: string; signature_data: string | null;
   signer_name: string | null; signed_at: string | null;
-  clients?: { full_name: string } | null;
+  clients?: { full_name: string; email?: string; company?: string | null } | null;
 }
 
 function EditProposal() {
@@ -25,10 +27,11 @@ function EditProposal() {
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
+  const [showAI, setShowAI] = useState(false);
 
   async function load() {
     const [{ data: prop }, { data: its }] = await Promise.all([
-      supabase.from("proposals").select("*, clients(full_name)").eq("id", id).single(),
+      supabase.from("proposals").select("*, clients(full_name, email, company)").eq("id", id).single(),
       supabase.from("proposal_items").select("*").eq("proposal_id", id).order("position"),
     ]);
     setP(prop as Proposal);
@@ -53,7 +56,8 @@ function EditProposal() {
     if (!p) return;
     setSaving(true);
     await supabase.from("proposals").update({
-      title: p.title, intro: p.intro, valid_until: p.valid_until || null, total,
+      title: p.title, intro: p.intro, body_markdown: p.body_markdown,
+      valid_until: p.valid_until || null, total,
     }).eq("id", id);
     await supabase.from("proposal_items").delete().eq("proposal_id", id);
     if (items.length > 0) {
@@ -76,11 +80,24 @@ function EditProposal() {
   function downloadPdf() {
     if (!p) return;
     generateProposalPdf({
-      title: p.title, intro: p.intro, valid_until: p.valid_until, total,
+      title: p.title, intro: p.intro, body_markdown: p.body_markdown,
+      valid_until: p.valid_until, total,
       client_name: p.clients?.full_name ?? "Cliente",
       signature_data: p.signature_data, signer_name: p.signer_name, signed_at: p.signed_at,
       items: items.map((i) => ({ description: i.description, quantity: i.quantity, unit_price: i.unit_price })),
     });
+  }
+
+  function applyAI(r: BriefingResult) {
+    if (!p) return;
+    setP({ ...p, title: r.title || p.title, intro: r.intro ?? p.intro, body_markdown: r.body_markdown ?? p.body_markdown });
+    if (r.items?.length) {
+      setItems(r.items.map((it, idx) => ({ description: it.description, quantity: it.quantity || 1, unit_price: it.unit_price || 0, position: idx })));
+    }
+    if (r.valid_until_days && !p.valid_until) {
+      const d = new Date(); d.setDate(d.getDate() + r.valid_until_days);
+      setP((prev) => prev ? { ...prev, valid_until: d.toISOString().slice(0, 10) } : prev);
+    }
   }
 
   if (loading || !p) return <div className="grid h-64 place-items-center"><Loader2 className="h-6 w-6 animate-spin text-primary" /></div>;
@@ -96,7 +113,10 @@ function EditProposal() {
           <p className="text-xs uppercase text-muted-foreground">Cliente: {p.clients?.full_name}</p>
           <h1 className="font-display text-3xl font-bold">Editar proposta</h1>
         </div>
-        <div className="flex gap-2">
+        <div className="flex flex-wrap gap-2">
+          <button onClick={() => setShowAI(true)} className="inline-flex h-10 items-center gap-2 rounded-xl bg-gradient-brand px-4 text-sm font-semibold text-primary-foreground shadow-elegant">
+            <Sparkles className="h-4 w-4" /> Gerar com IA
+          </button>
           <button onClick={downloadPdf} className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold">
             <FileDown className="h-4 w-4" /> PDF
           </button>
@@ -104,7 +124,7 @@ function EditProposal() {
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Salvar
           </button>
           {p.status === "rascunho" && (
-            <button onClick={send} className="inline-flex h-10 items-center gap-2 rounded-xl bg-gradient-brand px-4 text-sm font-semibold text-primary-foreground shadow-elegant">
+            <button onClick={send} className="inline-flex h-10 items-center gap-2 rounded-xl bg-primary px-4 text-sm font-semibold text-primary-foreground">
               <Send className="h-4 w-4" /> Enviar
             </button>
           )}
@@ -113,7 +133,10 @@ function EditProposal() {
 
       <section className="rounded-2xl border border-border bg-card p-6 space-y-4">
         <Field label="Título"><input value={p.title} onChange={(e) => setP({ ...p, title: e.target.value })} className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm" /></Field>
-        <Field label="Introdução"><textarea rows={4} value={p.intro ?? ""} onChange={(e) => setP({ ...p, intro: e.target.value })} className="w-full rounded-xl border border-input bg-background p-3 text-sm" placeholder="Apresente o escopo, objetivos e benefícios…" /></Field>
+        <Field label="Resumo executivo"><textarea rows={4} value={p.intro ?? ""} onChange={(e) => setP({ ...p, intro: e.target.value })} className="w-full rounded-xl border border-input bg-background p-3 text-sm" placeholder="Apresente o escopo, objetivos e benefícios…" /></Field>
+        <Field label="Detalhamento (markdown — entra no PDF a partir da página 2)">
+          <textarea rows={12} value={p.body_markdown ?? ""} onChange={(e) => setP({ ...p, body_markdown: e.target.value })} className="w-full rounded-xl border border-input bg-background p-3 font-mono text-xs" placeholder="## Contexto&#10;...&#10;## Solução proposta&#10;..." />
+        </Field>
         <Field label="Validade"><input type="date" value={p.valid_until ?? ""} onChange={(e) => setP({ ...p, valid_until: e.target.value })} className="h-11 w-full max-w-xs rounded-xl border border-input bg-background px-3 text-sm" /></Field>
       </section>
 
@@ -147,6 +170,17 @@ function EditProposal() {
           <p className="text-sm text-muted-foreground">Por {p.signer_name} em {p.signed_at && new Date(p.signed_at).toLocaleString("pt-BR")}</p>
           <img src={p.signature_data} alt="Assinatura" className="mt-3 max-h-32 rounded-lg border border-border bg-white p-2" />
         </section>
+      )}
+
+      {showAI && p.clients && (
+        <AIDocumentWizard
+          type="proposal"
+          clientName={p.clients.full_name}
+          clientEmail={p.clients.email}
+          clientCompany={p.clients.company ?? undefined}
+          onClose={() => setShowAI(false)}
+          onGenerated={applyAI}
+        />
       )}
     </div>
   );
