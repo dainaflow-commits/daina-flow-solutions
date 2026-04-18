@@ -7,10 +7,11 @@ import { LayoutDashboard, LogIn, LogOut, Menu, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const LINKS = [
-  { href: "#sobre", label: "Sobre" },
-  { href: "#servicos", label: "Serviços" },
-  { href: "#diferencial", label: "Diferencial" },
-  { href: "#contato", label: "Contato" },
+  { href: "/#sobre", label: "Sobre" },
+  { href: "/#servicos", label: "Serviços" },
+  { href: "/portfolio", label: "Portfólio" },
+  { href: "/#diferencial", label: "Diferencial" },
+  { href: "/#contato", label: "Contato" },
 ];
 
 export function PublicNav() {

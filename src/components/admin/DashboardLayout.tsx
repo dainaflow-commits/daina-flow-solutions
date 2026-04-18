@@ -5,26 +5,57 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Briefcase, MessageSquareQuote, Inbox, BarChart3,
   Settings, LogOut, Loader2, Users, FolderKanban, FileText, DollarSign,
-  Image as ImageIcon, History, Calendar, Menu, X,
+  Image as ImageIcon, History, Calendar, Menu, FileSignature, Bell,
 } from "lucide-react";
 import { toast } from "sonner";
 import { BrandLogo } from "@/components/BrandLogo";
 import { NotificationBell } from "@/components/NotificationBell";
 
-const NAV = [
-  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true },
-  { to: "/dashboard/servicos", label: "Serviços", icon: Briefcase },
-  { to: "/dashboard/projetos", label: "Projetos", icon: FolderKanban },
-  { to: "/dashboard/clientes", label: "Clientes", icon: Users },
-  { to: "/dashboard/leads", label: "Leads", icon: Inbox },
-  { to: "/dashboard/propostas", label: "Propostas", icon: FileText },
-  { to: "/dashboard/fluxo-caixa", label: "Fluxo de Caixa", icon: DollarSign },
-  { to: "/dashboard/portfolio", label: "Portfólio", icon: ImageIcon },
-  { to: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
-  { to: "/dashboard/auditoria", label: "Auditoria", icon: History },
-  { to: "/dashboard/calendario", label: "Calendário", icon: Calendar },
-  { to: "/dashboard/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
-  { to: "/dashboard/configuracoes", label: "Configurações", icon: Settings },
+type NavItem = { to: string; label: string; icon: any; exact?: boolean };
+type NavGroup = { label: string; items: NavItem[] };
+
+const NAV: NavGroup[] = [
+  {
+    label: "Visão geral",
+    items: [{ to: "/dashboard", label: "Dashboard", icon: LayoutDashboard, exact: true }],
+  },
+  {
+    label: "Comercial",
+    items: [
+      { to: "/dashboard/leads", label: "Leads", icon: Inbox },
+      { to: "/dashboard/propostas", label: "Propostas", icon: FileText },
+      { to: "/dashboard/contratos", label: "Contratos", icon: FileSignature },
+    ],
+  },
+  {
+    label: "Entregas",
+    items: [
+      { to: "/dashboard/projetos", label: "Projetos", icon: FolderKanban },
+      { to: "/dashboard/clientes", label: "Clientes", icon: Users },
+      { to: "/dashboard/calendario", label: "Calendário", icon: Calendar },
+    ],
+  },
+  {
+    label: "Financeiro",
+    items: [{ to: "/dashboard/fluxo-caixa", label: "Fluxo de Caixa", icon: DollarSign }],
+  },
+  {
+    label: "Conteúdo",
+    items: [
+      { to: "/dashboard/servicos", label: "Serviços", icon: Briefcase },
+      { to: "/dashboard/portfolio", label: "Portfólio", icon: ImageIcon },
+      { to: "/dashboard/depoimentos", label: "Depoimentos", icon: MessageSquareQuote },
+    ],
+  },
+  {
+    label: "Sistema",
+    items: [
+      { to: "/dashboard/notificacoes", label: "Notificações", icon: Bell },
+      { to: "/dashboard/auditoria", label: "Auditoria", icon: History },
+      { to: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
+      { to: "/dashboard/configuracoes", label: "Configurações", icon: Settings },
+    ],
+  },
 ];
 
 export function DashboardLayout({ children }: { children?: ReactNode }) {
@@ -79,23 +110,32 @@ export function DashboardLayout({ children }: { children?: ReactNode }) {
       <Link to="/dashboard" className="flex h-16 items-center border-b border-border px-5">
         <BrandLogo size="md" />
       </Link>
-      <nav className="flex-1 space-y-1 overflow-y-auto p-3">
-        {NAV.map(({ to, label, icon: Icon, exact }) => {
-          const active = exact ? location.pathname === to : location.pathname.startsWith(to);
-          return (
-            <Link
-              key={to} to={to} preload="intent"
-              className={`flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-smooth ${
-                active
-                  ? "bg-gradient-brand text-primary-foreground shadow-elegant"
-                  : "text-muted-foreground hover:bg-secondary hover:text-foreground"
-              }`}
-            >
-              <Icon className="h-4 w-4" />
-              {label}
-            </Link>
-          );
-        })}
+      <nav className="flex-1 space-y-4 overflow-y-auto p-3">
+        {NAV.map((group) => (
+          <div key={group.label}>
+            <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/70">
+              {group.label}
+            </p>
+            <div className="space-y-0.5">
+              {group.items.map(({ to, label, icon: Icon, exact }) => {
+                const active = exact ? location.pathname === to : location.pathname.startsWith(to);
+                return (
+                  <Link
+                    key={to} to={to} preload="intent"
+                    className={`flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-smooth ${
+                      active
+                        ? "bg-gradient-brand text-primary-foreground shadow-elegant"
+                        : "text-muted-foreground hover:bg-secondary hover:text-foreground"
+                    }`}
+                  >
+                    <Icon className="h-4 w-4" />
+                    {label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
       </nav>
       <div className="border-t border-border p-3">
         <div className="mb-3 px-2 text-xs">
