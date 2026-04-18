@@ -60,7 +60,8 @@ function Settings() {
     const { error: upErr } = await supabase.storage.from("site-assets").upload(path, file, { upsert: true });
     if (upErr) { toast.error(upErr.message); setUploading(null); return; }
     const { data: pub } = supabase.storage.from("site-assets").getPublicUrl(path);
-    const url = pub.publicUrl;
+    // cache-buster: garante que o navegador busque a nova imagem em vez de cache antigo
+    const url = `${pub.publicUrl}?v=${Date.now()}`;
     setSettings((s) => ({ ...s, [key]: url }));
     await supabase.from("site_settings").upsert({ key, value: url });
     toast.success("Imagem enviada e salva");

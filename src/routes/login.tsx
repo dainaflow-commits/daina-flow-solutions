@@ -19,6 +19,7 @@ function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
+  const [acceptedTerms, setAcceptedTerms] = useState(false);
   const [loading, setLoading] = useState(false);
   const [googleLoading, setGoogleLoading] = useState(false);
 
@@ -48,6 +49,10 @@ function LoginPage() {
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
+    if (mode === "signup" && !acceptedTerms) {
+      toast.error("Você precisa aceitar os Termos de Uso e a Política de Privacidade.");
+      return;
+    }
     setLoading(true);
     try {
       if (mode === "signup") {
@@ -55,7 +60,7 @@ function LoginPage() {
           email, password,
           options: {
             emailRedirectTo: `${window.location.origin}/login`,
-            data: { full_name: name },
+            data: { full_name: name, terms_accepted_at: new Date().toISOString() },
           },
         });
         if (error) throw error;
@@ -132,6 +137,25 @@ function LoginPage() {
             )}
             <Input label="E-mail" type="email" value={email} onChange={setEmail} />
             <Input label="Senha" type="password" value={password} onChange={setPassword} />
+            {mode === "signup" && (
+              <label className="flex items-start gap-2.5 rounded-xl border border-border bg-secondary/40 p-3 text-xs text-muted-foreground">
+                <input
+                  type="checkbox"
+                  checked={acceptedTerms}
+                  onChange={(e) => setAcceptedTerms(e.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 rounded border-border accent-primary"
+                />
+                <span>
+                  Li e aceito os{" "}
+                  <Link to="/legal/$slug" params={{ slug: "termos" }} target="_blank" className="font-semibold text-primary hover:underline">Termos de Uso</Link>
+                  {", a "}
+                  <Link to="/legal/$slug" params={{ slug: "privacidade" }} target="_blank" className="font-semibold text-primary hover:underline">Política de Privacidade (LGPD)</Link>
+                  {" e a "}
+                  <Link to="/legal/$slug" params={{ slug: "transparencia" }} target="_blank" className="font-semibold text-primary hover:underline">Política de Transparência</Link>
+                  .
+                </span>
+              </label>
+            )}
             <button
               type="submit" disabled={loading}
               className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-brand text-sm font-semibold text-primary-foreground shadow-elegant transition-smooth hover:opacity-90 disabled:opacity-60"

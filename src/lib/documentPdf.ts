@@ -28,13 +28,18 @@ function footer(doc: jsPDF) {
   const w = doc.internal.pageSize.getWidth();
   const h = doc.internal.pageSize.getHeight();
   doc.setDrawColor(220);
-  doc.line(14, h - 18, w - 14, h - 18);
+  doc.line(14, h - 22, w - 14, h - 22);
   doc.setTextColor(120);
   doc.setFontSize(8);
   doc.setFont("helvetica", "normal");
-  doc.text("Daina Flow · Larissa Daina dos Santos Quirino · Igarapé-MG", 14, h - 11);
+  doc.text("Daina Flow · Larissa Daina dos Santos Quirino · Igarapé-MG", 14, h - 15);
+  doc.setFontSize(7);
+  doc.text(
+    "Sujeito à Política de Privacidade (LGPD), Termos de Uso e Política de Transparência — disponíveis em dainaflow.com/legal",
+    14, h - 10,
+  );
   const pageStr = `Página ${doc.getCurrentPageInfo().pageNumber}`;
-  doc.text(pageStr, w - 14, h - 11, { align: "right" });
+  doc.text(pageStr, w - 14, h - 10, { align: "right" });
 }
 
 function ensureSpace(doc: jsPDF, y: number, needed = 20): number {
