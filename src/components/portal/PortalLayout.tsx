@@ -2,7 +2,7 @@ import { Link, Outlet, useLocation, useNavigate } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
-import { LayoutDashboard, FolderKanban, MessageSquare, User, LogOut, Loader2, FileText, Bell as BellIcon, FileSignature } from "lucide-react";
+import { LayoutDashboard, FolderKanban, MessageSquare, User, LogOut, Loader2, FileText, Bell as BellIcon, FileSignature, Ticket } from "lucide-react";
 import { toast } from "sonner";
 import { BrandLogo } from "@/components/BrandLogo";
 import { NotificationBell } from "@/components/NotificationBell";
@@ -14,6 +14,7 @@ const NAV = [
   { to: "/portal/propostas", label: "Propostas", icon: FileText },
   { to: "/portal/contratos", label: "Contratos", icon: FileSignature },
   { to: "/portal/chat", label: "Chat com a Larissa", icon: MessageSquare },
+  { to: "/portal/tickets", label: "Meus tickets", icon: Ticket },
   { to: "/portal/notificacoes", label: "Notificações", icon: BellIcon },
   { to: "/portal/perfil", label: "Meu perfil", icon: User },
 ];

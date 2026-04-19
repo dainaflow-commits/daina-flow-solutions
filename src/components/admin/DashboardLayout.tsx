@@ -5,7 +5,7 @@ import { supabase } from "@/integrations/supabase/client";
 import {
   LayoutDashboard, Briefcase, MessageSquareQuote, Inbox, BarChart3,
   Settings, LogOut, Loader2, Users, FolderKanban, FileText, DollarSign,
-  Image as ImageIcon, History, Calendar, Menu, FileSignature, Bell, Scale,
+  Image as ImageIcon, History, Calendar, Menu, FileSignature, Bell, Scale, Ticket,
 } from "lucide-react";
 import { toast } from "sonner";
 import { BrandLogo } from "@/components/BrandLogo";
@@ -48,9 +48,15 @@ const NAV: NavGroup[] = [
     ],
   },
   {
+    label: "Atendimento",
+    items: [
+      { to: "/dashboard/tickets", label: "Tickets", icon: Ticket },
+      { to: "/dashboard/notificacoes", label: "Notificações", icon: Bell },
+    ],
+  },
+  {
     label: "Sistema",
     items: [
-      { to: "/dashboard/notificacoes", label: "Notificações", icon: Bell },
       { to: "/dashboard/auditoria", label: "Auditoria", icon: History },
       { to: "/dashboard/analytics", label: "Analytics", icon: BarChart3 },
       { to: "/dashboard/legal", label: "Documentos legais", icon: Scale },

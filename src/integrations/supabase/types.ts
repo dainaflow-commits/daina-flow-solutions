@@ -624,33 +624,60 @@ export type Database = {
         Row: {
           active: boolean
           created_at: string
+          deliverables: Json | null
           description: string
           display_order: number
+          duration_estimate: string | null
+          faq: Json | null
+          gallery_urls: Json | null
+          hero_image_url: string | null
           icon: string
           id: string
+          long_description: string | null
           price_text: string | null
+          slug: string
+          tags: Json | null
+          target_audience: Json | null
           title: string
           updated_at: string
         }
         Insert: {
           active?: boolean
           created_at?: string
+          deliverables?: Json | null
           description: string
           display_order?: number
+          duration_estimate?: string | null
+          faq?: Json | null
+          gallery_urls?: Json | null
+          hero_image_url?: string | null
           icon?: string
           id?: string
+          long_description?: string | null
           price_text?: string | null
+          slug: string
+          tags?: Json | null
+          target_audience?: Json | null
           title: string
           updated_at?: string
         }
         Update: {
           active?: boolean
           created_at?: string
+          deliverables?: Json | null
           description?: string
           display_order?: number
+          duration_estimate?: string | null
+          faq?: Json | null
+          gallery_urls?: Json | null
+          hero_image_url?: string | null
           icon?: string
           id?: string
+          long_description?: string | null
           price_text?: string | null
+          slug?: string
+          tags?: Json | null
+          target_audience?: Json | null
           title?: string
           updated_at?: string
         }
@@ -713,6 +740,86 @@ export type Database = {
         }
         Relationships: []
       }
+      ticket_messages: {
+        Row: {
+          content: string
+          created_at: string
+          id: string
+          sender_id: string | null
+          sender_role: string
+          ticket_id: string
+        }
+        Insert: {
+          content: string
+          created_at?: string
+          id?: string
+          sender_id?: string | null
+          sender_role: string
+          ticket_id: string
+        }
+        Update: {
+          content?: string
+          created_at?: string
+          id?: string
+          sender_id?: string | null
+          sender_role?: string
+          ticket_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ticket_messages_ticket_id_fkey"
+            columns: ["ticket_id"]
+            isOneToOne: false
+            referencedRelation: "tickets"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      tickets: {
+        Row: {
+          created_at: string
+          description: string
+          guest_email: string | null
+          guest_name: string | null
+          id: string
+          priority: string
+          source: string
+          status: string
+          subject: string
+          type: string
+          updated_at: string
+          user_id: string | null
+        }
+        Insert: {
+          created_at?: string
+          description: string
+          guest_email?: string | null
+          guest_name?: string | null
+          id?: string
+          priority?: string
+          source?: string
+          status?: string
+          subject: string
+          type: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Update: {
+          created_at?: string
+          description?: string
+          guest_email?: string | null
+          guest_name?: string | null
+          id?: string
+          priority?: string
+          source?: string
+          status?: string
+          subject?: string
+          type?: string
+          updated_at?: string
+          user_id?: string | null
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string
@@ -746,6 +853,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      slugify: { Args: { v: string }; Returns: string }
     }
     Enums: {
       app_role: "admin" | "client"
