@@ -11,7 +11,7 @@ export const Route = createFileRoute("/dashboard/legal")({
   component: () => <DashboardLayout><AdminLegal /></DashboardLayout>,
 });
 
-interface Doc { slug: string; title: string; content_markdown: string; updated_at: string }
+interface Doc { slug: string; title: string; content_markdown: string; updated_at: string; version: string }
 
 const SLUG_LABEL: Record<string, string> = {
   privacidade: "Política de Privacidade (LGPD)",
@@ -57,7 +57,7 @@ function AdminLegal() {
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
           <h1 className="font-display text-3xl font-bold">Documentos legais</h1>
-          <p className="text-sm text-muted-foreground">Edite LGPD, Termos de Uso e Transparência. Aparecem no rodapé, no cadastro, em propostas e contratos.</p>
+          <p className="text-sm text-muted-foreground">Edite LGPD, Termos e Transparência. Ao salvar uma alteração, a versão é incrementada e os usuários precisarão reaceitar no próximo login.</p>
         </div>
       </div>
 
@@ -73,11 +73,16 @@ function AdminLegal() {
       {current && (
         <div className="space-y-4 rounded-2xl border border-border bg-card p-5">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <input
-              value={current.title}
-              onChange={(e) => update({ title: e.target.value })}
-              className="h-11 flex-1 rounded-xl border border-input bg-background px-3 text-sm font-semibold"
-            />
+            <div className="flex flex-1 items-center gap-2">
+              <input
+                value={current.title}
+                onChange={(e) => update({ title: e.target.value })}
+                className="h-11 flex-1 rounded-xl border border-input bg-background px-3 text-sm font-semibold"
+              />
+              <span className="shrink-0 rounded-full bg-secondary px-3 py-1 text-xs font-semibold text-muted-foreground">
+                v{current.version}
+              </span>
+            </div>
             <Link to="/legal/$slug" params={{ slug: current.slug }} target="_blank"
               className="inline-flex h-11 items-center gap-2 rounded-xl border border-border px-4 text-xs font-semibold hover:bg-secondary">
               <ExternalLink className="h-3.5 w-3.5" /> Ver página pública
