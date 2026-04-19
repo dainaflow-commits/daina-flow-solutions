@@ -6,6 +6,7 @@ import { LayoutDashboard, FolderKanban, MessageSquare, User, LogOut, Loader2, Fi
 import { toast } from "sonner";
 import { BrandLogo } from "@/components/BrandLogo";
 import { NotificationBell } from "@/components/NotificationBell";
+import { ReconsentGate } from "@/components/legal/ReconsentGate";
 
 const NAV = [
   { to: "/portal", label: "Visão geral", icon: LayoutDashboard, exact: true },
@@ -43,6 +44,7 @@ export function PortalLayout({ children }: { children?: ReactNode }) {
   }
 
   return (
+    <ReconsentGate>
     <div className="flex min-h-screen w-full bg-secondary/30">
       <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-r border-border bg-card md:flex">
         <Link to="/portal" className="flex h-16 items-center border-b border-border px-5">
@@ -105,5 +107,6 @@ export function PortalLayout({ children }: { children?: ReactNode }) {
         {children ?? <Outlet />}
       </main>
     </div>
+    </ReconsentGate>
   );
 }
