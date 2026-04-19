@@ -207,18 +207,21 @@ export type Database = {
           slug: string
           title: string
           updated_at: string
+          version: string
         }
         Insert: {
           content_markdown?: string
           slug: string
           title: string
           updated_at?: string
+          version?: string
         }
         Update: {
           content_markdown?: string
           slug?: string
           title?: string
           updated_at?: string
+          version?: string
         }
         Relationships: []
       }
