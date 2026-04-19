@@ -1,4 +1,4 @@
-import heroImg from "@/assets/larissa-hero.jpg";
+import heroImg from "@/assets/larissa.png";
 import { ArrowRight, MessageCircle, Sparkles } from "lucide-react";
 import { buildWhatsappLink, GENERIC_HELLO } from "@/lib/whatsapp";
 import { useEffect, useState } from "react";
