@@ -9,11 +9,14 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as ServicosRouteImport } from './routes/servicos'
 import { Route as PortfolioRouteImport } from './routes/portfolio'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as PortalIndexRouteImport } from './routes/portal.index'
 import { Route as DashboardIndexRouteImport } from './routes/dashboard.index'
+import { Route as ServicosSlugRouteImport } from './routes/servicos.$slug'
+import { Route as PortalTicketsRouteImport } from './routes/portal.tickets'
 import { Route as PortalPropostasRouteImport } from './routes/portal.propostas'
 import { Route as PortalProjetosRouteImport } from './routes/portal.projetos'
 import { Route as PortalPerfilRouteImport } from './routes/portal.perfil'
@@ -21,6 +24,7 @@ import { Route as PortalNotificacoesRouteImport } from './routes/portal.notifica
 import { Route as PortalContratosRouteImport } from './routes/portal.contratos'
 import { Route as PortalChatRouteImport } from './routes/portal.chat'
 import { Route as LegalSlugRouteImport } from './routes/legal.$slug'
+import { Route as DashboardTicketsRouteImport } from './routes/dashboard.tickets'
 import { Route as DashboardServicosRouteImport } from './routes/dashboard.servicos'
 import { Route as DashboardResultadosRouteImport } from './routes/dashboard.resultados'
 import { Route as DashboardPropostasRouteImport } from './routes/dashboard.propostas'
@@ -44,6 +48,11 @@ import { Route as DashboardPropostasIdRouteImport } from './routes/dashboard.pro
 import { Route as DashboardContratosIdRouteImport } from './routes/dashboard.contratos.$id'
 import { Route as ContratoAssinarTokenRouteImport } from './routes/contrato.assinar.$token'
 
+const ServicosRoute = ServicosRouteImport.update({
+  id: '/servicos',
+  path: '/servicos',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const PortfolioRoute = PortfolioRouteImport.update({
   id: '/portfolio',
   path: '/portfolio',
@@ -67,6 +76,16 @@ const PortalIndexRoute = PortalIndexRouteImport.update({
 const DashboardIndexRoute = DashboardIndexRouteImport.update({
   id: '/dashboard/',
   path: '/dashboard/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ServicosSlugRoute = ServicosSlugRouteImport.update({
+  id: '/$slug',
+  path: '/$slug',
+  getParentRoute: () => ServicosRoute,
+} as any)
+const PortalTicketsRoute = PortalTicketsRouteImport.update({
+  id: '/portal/tickets',
+  path: '/portal/tickets',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalPropostasRoute = PortalPropostasRouteImport.update({
@@ -102,6 +121,11 @@ const PortalChatRoute = PortalChatRouteImport.update({
 const LegalSlugRoute = LegalSlugRouteImport.update({
   id: '/legal/$slug',
   path: '/legal/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const DashboardTicketsRoute = DashboardTicketsRouteImport.update({
+  id: '/dashboard/tickets',
+  path: '/dashboard/tickets',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DashboardServicosRoute = DashboardServicosRouteImport.update({
@@ -219,6 +243,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
+  '/servicos': typeof ServicosRouteWithChildren
   '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/auditoria': typeof DashboardAuditoriaRoute
@@ -236,6 +261,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/propostas': typeof DashboardPropostasRouteWithChildren
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
+  '/dashboard/tickets': typeof DashboardTicketsRoute
   '/legal/$slug': typeof LegalSlugRoute
   '/portal/chat': typeof PortalChatRoute
   '/portal/contratos': typeof PortalContratosRoute
@@ -243,6 +269,8 @@ export interface FileRoutesByFullPath {
   '/portal/perfil': typeof PortalPerfilRoute
   '/portal/projetos': typeof PortalProjetosRouteWithChildren
   '/portal/propostas': typeof PortalPropostasRouteWithChildren
+  '/portal/tickets': typeof PortalTicketsRoute
+  '/servicos/$slug': typeof ServicosSlugRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/contrato/assinar/$token': typeof ContratoAssinarTokenRoute
@@ -255,6 +283,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
+  '/servicos': typeof ServicosRouteWithChildren
   '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/auditoria': typeof DashboardAuditoriaRoute
@@ -272,6 +301,7 @@ export interface FileRoutesByTo {
   '/dashboard/propostas': typeof DashboardPropostasRouteWithChildren
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
+  '/dashboard/tickets': typeof DashboardTicketsRoute
   '/legal/$slug': typeof LegalSlugRoute
   '/portal/chat': typeof PortalChatRoute
   '/portal/contratos': typeof PortalContratosRoute
@@ -279,6 +309,8 @@ export interface FileRoutesByTo {
   '/portal/perfil': typeof PortalPerfilRoute
   '/portal/projetos': typeof PortalProjetosRouteWithChildren
   '/portal/propostas': typeof PortalPropostasRouteWithChildren
+  '/portal/tickets': typeof PortalTicketsRoute
+  '/servicos/$slug': typeof ServicosSlugRoute
   '/dashboard': typeof DashboardIndexRoute
   '/portal': typeof PortalIndexRoute
   '/contrato/assinar/$token': typeof ContratoAssinarTokenRoute
@@ -292,6 +324,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
+  '/servicos': typeof ServicosRouteWithChildren
   '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/auditoria': typeof DashboardAuditoriaRoute
@@ -309,6 +342,7 @@ export interface FileRoutesById {
   '/dashboard/propostas': typeof DashboardPropostasRouteWithChildren
   '/dashboard/resultados': typeof DashboardResultadosRoute
   '/dashboard/servicos': typeof DashboardServicosRoute
+  '/dashboard/tickets': typeof DashboardTicketsRoute
   '/legal/$slug': typeof LegalSlugRoute
   '/portal/chat': typeof PortalChatRoute
   '/portal/contratos': typeof PortalContratosRoute
@@ -316,6 +350,8 @@ export interface FileRoutesById {
   '/portal/perfil': typeof PortalPerfilRoute
   '/portal/projetos': typeof PortalProjetosRouteWithChildren
   '/portal/propostas': typeof PortalPropostasRouteWithChildren
+  '/portal/tickets': typeof PortalTicketsRoute
+  '/servicos/$slug': typeof ServicosSlugRoute
   '/dashboard/': typeof DashboardIndexRoute
   '/portal/': typeof PortalIndexRoute
   '/contrato/assinar/$token': typeof ContratoAssinarTokenRoute
@@ -330,6 +366,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/portfolio'
+    | '/servicos'
     | '/api/bootstrap-admin'
     | '/dashboard/analytics'
     | '/dashboard/auditoria'
@@ -347,6 +384,7 @@ export interface FileRouteTypes {
     | '/dashboard/propostas'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
+    | '/dashboard/tickets'
     | '/legal/$slug'
     | '/portal/chat'
     | '/portal/contratos'
@@ -354,6 +392,8 @@ export interface FileRouteTypes {
     | '/portal/perfil'
     | '/portal/projetos'
     | '/portal/propostas'
+    | '/portal/tickets'
+    | '/servicos/$slug'
     | '/dashboard/'
     | '/portal/'
     | '/contrato/assinar/$token'
@@ -366,6 +406,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/portfolio'
+    | '/servicos'
     | '/api/bootstrap-admin'
     | '/dashboard/analytics'
     | '/dashboard/auditoria'
@@ -383,6 +424,7 @@ export interface FileRouteTypes {
     | '/dashboard/propostas'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
+    | '/dashboard/tickets'
     | '/legal/$slug'
     | '/portal/chat'
     | '/portal/contratos'
@@ -390,6 +432,8 @@ export interface FileRouteTypes {
     | '/portal/perfil'
     | '/portal/projetos'
     | '/portal/propostas'
+    | '/portal/tickets'
+    | '/servicos/$slug'
     | '/dashboard'
     | '/portal'
     | '/contrato/assinar/$token'
@@ -402,6 +446,7 @@ export interface FileRouteTypes {
     | '/'
     | '/login'
     | '/portfolio'
+    | '/servicos'
     | '/api/bootstrap-admin'
     | '/dashboard/analytics'
     | '/dashboard/auditoria'
@@ -419,6 +464,7 @@ export interface FileRouteTypes {
     | '/dashboard/propostas'
     | '/dashboard/resultados'
     | '/dashboard/servicos'
+    | '/dashboard/tickets'
     | '/legal/$slug'
     | '/portal/chat'
     | '/portal/contratos'
@@ -426,6 +472,8 @@ export interface FileRouteTypes {
     | '/portal/perfil'
     | '/portal/projetos'
     | '/portal/propostas'
+    | '/portal/tickets'
+    | '/servicos/$slug'
     | '/dashboard/'
     | '/portal/'
     | '/contrato/assinar/$token'
@@ -439,6 +487,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
   PortfolioRoute: typeof PortfolioRoute
+  ServicosRoute: typeof ServicosRouteWithChildren
   ApiBootstrapAdminRoute: typeof ApiBootstrapAdminRoute
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
   DashboardAuditoriaRoute: typeof DashboardAuditoriaRoute
@@ -456,6 +505,7 @@ export interface RootRouteChildren {
   DashboardPropostasRoute: typeof DashboardPropostasRouteWithChildren
   DashboardResultadosRoute: typeof DashboardResultadosRoute
   DashboardServicosRoute: typeof DashboardServicosRoute
+  DashboardTicketsRoute: typeof DashboardTicketsRoute
   LegalSlugRoute: typeof LegalSlugRoute
   PortalChatRoute: typeof PortalChatRoute
   PortalContratosRoute: typeof PortalContratosRoute
@@ -463,6 +513,7 @@ export interface RootRouteChildren {
   PortalPerfilRoute: typeof PortalPerfilRoute
   PortalProjetosRoute: typeof PortalProjetosRouteWithChildren
   PortalPropostasRoute: typeof PortalPropostasRouteWithChildren
+  PortalTicketsRoute: typeof PortalTicketsRoute
   DashboardIndexRoute: typeof DashboardIndexRoute
   PortalIndexRoute: typeof PortalIndexRoute
   ContratoAssinarTokenRoute: typeof ContratoAssinarTokenRoute
@@ -470,6 +521,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/servicos': {
+      id: '/servicos'
+      path: '/servicos'
+      fullPath: '/servicos'
+      preLoaderRoute: typeof ServicosRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/portfolio': {
       id: '/portfolio'
       path: '/portfolio'
@@ -503,6 +561,20 @@ declare module '@tanstack/react-router' {
       path: '/dashboard'
       fullPath: '/dashboard/'
       preLoaderRoute: typeof DashboardIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/servicos/$slug': {
+      id: '/servicos/$slug'
+      path: '/$slug'
+      fullPath: '/servicos/$slug'
+      preLoaderRoute: typeof ServicosSlugRouteImport
+      parentRoute: typeof ServicosRoute
+    }
+    '/portal/tickets': {
+      id: '/portal/tickets'
+      path: '/portal/tickets'
+      fullPath: '/portal/tickets'
+      preLoaderRoute: typeof PortalTicketsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal/propostas': {
@@ -552,6 +624,13 @@ declare module '@tanstack/react-router' {
       path: '/legal/$slug'
       fullPath: '/legal/$slug'
       preLoaderRoute: typeof LegalSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/tickets': {
+      id: '/dashboard/tickets'
+      path: '/dashboard/tickets'
+      fullPath: '/dashboard/tickets'
+      preLoaderRoute: typeof DashboardTicketsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/servicos': {
@@ -711,6 +790,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface ServicosRouteChildren {
+  ServicosSlugRoute: typeof ServicosSlugRoute
+}
+
+const ServicosRouteChildren: ServicosRouteChildren = {
+  ServicosSlugRoute: ServicosSlugRoute,
+}
+
+const ServicosRouteWithChildren = ServicosRoute._addFileChildren(
+  ServicosRouteChildren,
+)
+
 interface DashboardContratosRouteChildren {
   DashboardContratosIdRoute: typeof DashboardContratosIdRoute
 }
@@ -761,6 +852,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
   PortfolioRoute: PortfolioRoute,
+  ServicosRoute: ServicosRouteWithChildren,
   ApiBootstrapAdminRoute: ApiBootstrapAdminRoute,
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
   DashboardAuditoriaRoute: DashboardAuditoriaRoute,
@@ -778,6 +870,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardPropostasRoute: DashboardPropostasRouteWithChildren,
   DashboardResultadosRoute: DashboardResultadosRoute,
   DashboardServicosRoute: DashboardServicosRoute,
+  DashboardTicketsRoute: DashboardTicketsRoute,
   LegalSlugRoute: LegalSlugRoute,
   PortalChatRoute: PortalChatRoute,
   PortalContratosRoute: PortalContratosRoute,
@@ -785,6 +878,7 @@ const rootRouteChildren: RootRouteChildren = {
   PortalPerfilRoute: PortalPerfilRoute,
   PortalProjetosRoute: PortalProjetosRouteWithChildren,
   PortalPropostasRoute: PortalPropostasRouteWithChildren,
+  PortalTicketsRoute: PortalTicketsRoute,
   DashboardIndexRoute: DashboardIndexRoute,
   PortalIndexRoute: PortalIndexRoute,
   ContratoAssinarTokenRoute: ContratoAssinarTokenRoute,

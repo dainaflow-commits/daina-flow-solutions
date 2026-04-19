@@ -243,7 +243,7 @@ function ListEditor({ label, items, onChange, placeholder }: { label: string; it
             </button>
           </div>
         ))}
-        <button onClick={() => onChange([...items, ""])} placeholder={placeholder}
+        <button onClick={() => onChange([...items, ""])} title={placeholder}
           className="inline-flex items-center gap-1 rounded-lg border border-dashed border-border px-3 py-1.5 text-xs">
           <Plus className="h-3 w-3" /> Adicionar item
         </button>

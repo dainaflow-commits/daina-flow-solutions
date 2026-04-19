@@ -1,27 +1,25 @@
 import { useEffect, useState } from "react";
+import { Link } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 import { getIcon } from "@/lib/icon-map";
-import { buildWhatsappLink, serviceMessage } from "@/lib/whatsapp";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 
 interface Service {
-  id: string; title: string; description: string; icon: string; price_text: string | null;
+  id: string; slug: string; title: string; description: string; icon: string; price_text: string | null;
 }
 
 export function ServicesSection() {
   const [services, setServices] = useState<Service[]>([]);
-  const [whatsapp, setWhatsapp] = useState<string | undefined>();
 
   useEffect(() => {
     supabase
       .from("services")
-      .select("id,title,description,icon,price_text")
+      .select("id,slug,title,description,icon,price_text")
       .eq("active", true)
       .order("display_order")
+      .limit(6)
       .then(({ data }) => setServices((data as Service[]) ?? []));
-    supabase.from("site_settings").select("value").eq("key", "whatsapp_number").maybeSingle()
-      .then(({ data }) => setWhatsapp(data?.value || undefined));
   }, []);
 
   return (
@@ -41,8 +39,11 @@ export function ServicesSection() {
             Soluções para <span className="text-gradient-brand">cada etapa</span> do seu negócio
           </h2>
           <p className="mt-3 text-muted-foreground">
-            Escolha um serviço e fale comigo direto no WhatsApp para um diagnóstico gratuito.
+            Veja os principais serviços abaixo ou explore o catálogo completo com busca.
           </p>
+          <Link to="/servicos" className="mt-5 inline-flex items-center gap-2 rounded-xl bg-gradient-brand px-5 py-2.5 text-sm font-semibold text-primary-foreground shadow-elegant">
+            Ver catálogo completo <ArrowRight className="h-4 w-4" />
+          </Link>
         </motion.div>
 
         <div className="grid gap-5 md:grid-cols-2 lg:grid-cols-3">
@@ -72,14 +73,13 @@ export function ServicesSection() {
                     {s.price_text}
                   </p>
                 )}
-                <a
-                  href={buildWhatsappLink(serviceMessage(s.title), whatsapp)}
-                  target="_blank" rel="noreferrer"
+                <Link
+                  to="/servicos/$slug" params={{ slug: s.slug }}
                   className="inline-flex items-center justify-between gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-semibold text-secondary-foreground transition-smooth hover:bg-gradient-brand hover:text-primary-foreground"
                 >
-                  Quero este serviço
+                  Ver detalhes
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                </a>
+                </Link>
               </motion.article>
             );
           })}
