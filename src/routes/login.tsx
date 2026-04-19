@@ -56,14 +56,23 @@ function LoginPage() {
     setLoading(true);
     try {
       if (mode === "signup") {
-        const { error } = await supabase.auth.signUp({
+        const acceptedAt = new Date().toISOString();
+        const { data: signUpData, error } = await supabase.auth.signUp({
           email, password,
           options: {
             emailRedirectTo: `${window.location.origin}/login`,
-            data: { full_name: name, terms_accepted_at: new Date().toISOString() },
+            data: { full_name: name, terms_accepted_at: acceptedAt },
           },
         });
         if (error) throw error;
+        // Registra consentimento LGPD com rastreabilidade
+        if (signUpData.user) {
+          const ua = typeof navigator !== "undefined" ? navigator.userAgent : null;
+          const rows = ["termos", "privacidade", "transparencia"].map((slug) => ({
+            user_id: signUpData.user!.id, slug, version: "1.0", accepted_at: acceptedAt, user_agent: ua,
+          }));
+          await supabase.from("legal_consent_tracking").insert(rows);
+        }
         toast.success("Conta criada! Você já pode acessar.");
       } else {
         const { error } = await supabase.auth.signInWithPassword({ email, password });

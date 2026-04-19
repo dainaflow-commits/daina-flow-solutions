@@ -1,4 +1,4 @@
-import heroImg from "@/assets/larissa-hero.jpg";
+import heroImg from "@/assets/larissa.png";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { MapPin, GraduationCap, Briefcase } from "lucide-react";
