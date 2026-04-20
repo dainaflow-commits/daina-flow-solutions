@@ -1,9 +1,9 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/admin/DashboardLayout";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import { Loader2, Send, Inbox } from "lucide-react";
+import { Loader2, Send, Inbox, Sparkles } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 
 export const Route = createFileRoute("/dashboard/tickets")({
@@ -29,6 +29,9 @@ const STATUS_COLOR: Record<string, string> = {
   resolvido: "bg-green-500/10 text-green-600",
   fechado: "bg-muted text-muted-foreground",
 };
+const STATUS_LABEL: Record<string, string> = {
+  aberto: "Abertos", em_analise: "Em análise", resolvido: "Resolvidos", fechado: "Fechados",
+};
 
 function AdminTickets() {
   const { user } = useAuth();
@@ -37,6 +40,7 @@ function AdminTickets() {
   const [active, setActive] = useState<Ticket | null>(null);
   const [messages, setMessages] = useState<Msg[]>([]);
   const [reply, setReply] = useState("");
+  const [suggesting, setSuggesting] = useState(false);
 
   async function load() {
     const { data } = await supabase.from("tickets").select("*").order("created_at", { ascending: false });
@@ -69,7 +73,29 @@ function AdminTickets() {
     if (error) toast.error(error.message); else setReply("");
   }
 
+  async function suggest() {
+    if (!active) return;
+    setSuggesting(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("suggest-ticket-reply", {
+        body: { ticket_id: active.id },
+      });
+      if (error) throw error;
+      if (data?.draft) {
+        setReply(data.draft);
+        toast.success(data.used_examples > 0 ? `Rascunho gerado com base em ${data.used_examples} casos similares` : "Rascunho gerado");
+      } else throw new Error("Sem rascunho");
+    } catch (e: any) {
+      toast.error(e.message ?? "Falha ao sugerir resposta");
+    } finally { setSuggesting(false); }
+  }
+
   const list = tickets?.filter((t) => filter === "todos" || t.status === filter) ?? [];
+  const counts = useMemo(() => {
+    const base: Record<string, number> = { todos: 0, aberto: 0, em_analise: 0, resolvido: 0, fechado: 0 };
+    tickets?.forEach((t) => { base.todos++; base[t.status] = (base[t.status] ?? 0) + 1; });
+    return base;
+  }, [tickets]);
 
   return (
     <div className="space-y-4">
@@ -78,11 +104,24 @@ function AdminTickets() {
         <p className="text-muted-foreground">Reclamações, sugestões e erros enviados pelos clientes.</p>
       </div>
 
+      {/* Contadores por status */}
+      <div className="grid grid-cols-2 gap-3 md:grid-cols-4">
+        {STATUS.map((s) => (
+          <div key={s} className="rounded-2xl border border-border bg-card p-4 shadow-card">
+            <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{STATUS_LABEL[s]}</p>
+            <p className={`mt-1 font-display text-2xl font-bold ${s === "aberto" && (counts[s] ?? 0) > 0 ? "text-blue-600" : ""}`}>
+              {counts[s] ?? 0}
+            </p>
+          </div>
+        ))}
+      </div>
+
       <div className="flex flex-wrap gap-2">
         {["todos", ...STATUS].map((s) => (
           <button key={s} onClick={() => setFilter(s)}
-            className={`rounded-full px-3 py-1.5 text-xs font-medium ${filter === s ? "bg-gradient-brand text-primary-foreground" : "bg-card border border-border"}`}>
+            className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-medium ${filter === s ? "bg-gradient-brand text-primary-foreground" : "bg-card border border-border"}`}>
             {s === "todos" ? "Todos" : s.replace("_", " ")}
+            <span className={`rounded-full px-1.5 text-[10px] ${filter === s ? "bg-white/20" : "bg-muted"}`}>{counts[s] ?? 0}</span>
           </button>
         ))}
       </div>
@@ -136,13 +175,22 @@ function AdminTickets() {
                 {messages.length === 0 && <p className="py-6 text-center text-xs text-muted-foreground">Sem mensagens ainda.</p>}
               </div>
 
-              <form onSubmit={(e) => { e.preventDefault(); send(); }} className="flex gap-2 border-t border-border p-3">
-                <input value={reply} onChange={(e) => setReply(e.target.value)} placeholder="Responder ao cliente…"
-                  className="flex-1 rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 ring-ring" />
-                <button type="submit" disabled={!reply.trim()}
-                  className="grid h-10 w-10 place-items-center rounded-xl bg-gradient-brand text-primary-foreground disabled:opacity-50">
-                  <Send className="h-4 w-4" />
-                </button>
+              <form onSubmit={(e) => { e.preventDefault(); send(); }} className="space-y-2 border-t border-border p-3">
+                <div className="flex justify-end">
+                  <button type="button" onClick={suggest} disabled={suggesting}
+                    className="inline-flex items-center gap-1.5 rounded-lg border border-primary/30 bg-primary/5 px-3 py-1.5 text-xs font-semibold text-primary hover:bg-primary/10 disabled:opacity-50">
+                    {suggesting ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Sparkles className="h-3.5 w-3.5" />}
+                    {suggesting ? "Gerando…" : "Sugerir resposta com IA"}
+                  </button>
+                </div>
+                <div className="flex gap-2">
+                  <textarea value={reply} onChange={(e) => setReply(e.target.value)} rows={3} placeholder="Responder ao cliente… (clique em Sugerir para rascunho via IA)"
+                    className="flex-1 resize-none rounded-xl border border-input bg-background px-3 py-2.5 text-sm outline-none focus:ring-2 ring-ring" />
+                  <button type="submit" disabled={!reply.trim()}
+                    className="grid h-10 w-10 shrink-0 place-items-center self-end rounded-xl bg-gradient-brand text-primary-foreground disabled:opacity-50">
+                    <Send className="h-4 w-4" />
+                  </button>
+                </div>
               </form>
             </div>
           ) : (

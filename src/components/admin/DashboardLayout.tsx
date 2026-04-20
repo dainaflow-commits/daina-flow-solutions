@@ -11,6 +11,23 @@ import { toast } from "sonner";
 import { BrandLogo } from "@/components/BrandLogo";
 import { NotificationBell } from "@/components/NotificationBell";
 
+function useTicketsBadge() {
+  const [count, setCount] = useState(0);
+  useEffect(() => {
+    let alive = true;
+    const fetchCount = async () => {
+      const { count: c } = await supabase.from("tickets").select("*", { count: "exact", head: true }).eq("status", "aberto");
+      if (alive) setCount(c ?? 0);
+    };
+    fetchCount();
+    const ch = supabase.channel("tickets-badge")
+      .on("postgres_changes", { event: "*", schema: "public", table: "tickets" }, fetchCount)
+      .subscribe();
+    return () => { alive = false; supabase.removeChannel(ch); };
+  }, []);
+  return count;
+}
+
 type NavItem = { to: string; label: string; icon: any; exact?: boolean };
 type NavGroup = { label: string; items: NavItem[] };
 
@@ -70,6 +87,7 @@ export function DashboardLayout({ children }: { children?: ReactNode }) {
   const navigate = useNavigate();
   const location = useLocation();
   const [mobileOpen, setMobileOpen] = useState(false);
+  const ticketsBadge = useTicketsBadge();
 
   useEffect(() => {
     if (loading) return;
@@ -126,6 +144,7 @@ export function DashboardLayout({ children }: { children?: ReactNode }) {
             <div className="space-y-0.5">
               {group.items.map(({ to, label, icon: Icon, exact }) => {
                 const active = exact ? location.pathname === to : location.pathname.startsWith(to);
+                const showBadge = to === "/dashboard/tickets" && ticketsBadge > 0;
                 return (
                   <Link
                     key={to} to={to} preload="intent"
@@ -136,7 +155,12 @@ export function DashboardLayout({ children }: { children?: ReactNode }) {
                     }`}
                   >
                     <Icon className="h-4 w-4" />
-                    {label}
+                    <span className="flex-1">{label}</span>
+                    {showBadge && (
+                      <span className={`grid min-w-[20px] place-items-center rounded-full px-1.5 text-[10px] font-bold ${active ? "bg-white/25 text-white" : "bg-blue-500 text-white"}`}>
+                        {ticketsBadge}
+                      </span>
+                    )}
                   </Link>
                 );
               })}

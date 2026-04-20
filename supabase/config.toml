@@ -2,3 +2,9 @@ project_id = "ywmebgthufpzzlxtphde"
 
 [functions.chatbot]
 verify_jwt = false
+
+[functions.notify-new-ticket]
+verify_jwt = false
+
+[functions.suggest-ticket-reply]
+verify_jwt = true
