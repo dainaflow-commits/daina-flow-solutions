@@ -4,6 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { getIcon } from "@/lib/icon-map";
 import { ArrowUpRight, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
+import { ServiceDetailsDrawer } from "./ServiceDetailsDrawer";
 
 interface Service {
   id: string; slug: string; title: string; description: string; icon: string; price_text: string | null;
@@ -11,6 +12,7 @@ interface Service {
 
 export function ServicesSection() {
   const [services, setServices] = useState<Service[]>([]);
+  const [openSlug, setOpenSlug] = useState<string | null>(null);
 
   useEffect(() => {
     supabase
