@@ -22,6 +22,13 @@ export function ServicesSection() {
       .order("display_order")
       .limit(6)
       .then(({ data }) => setServices((data as Service[]) ?? []));
+
+    const onOpen = (e: Event) => {
+      const slug = (e as CustomEvent<string>).detail;
+      if (typeof slug === "string") setOpenSlug(slug);
+    };
+    window.addEventListener("daina:open-service", onOpen);
+    return () => window.removeEventListener("daina:open-service", onOpen);
   }, []);
 
   return (
