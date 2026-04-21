@@ -29,10 +29,10 @@ function Index() {
       <PublicNav />
       <main>
         <HeroSection />
-        <AboutSection />
         <DifferentialSection />
         <ServicesSection />
         <ContactSection />
+        <AboutSection />
       </main>
       <Footer />
       <WhatsappFloat />

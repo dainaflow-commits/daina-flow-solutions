@@ -90,12 +90,11 @@ export function HeroSection() {
             animate={{ opacity: 1 }}
             transition={{ delay: 0.3 }}
           >
-            Combino visão administrativa com automação técnica (Low-code/No-code) para
-            entregar soluções práticas, inteligentes e que realmente geram resultado.
+            Soluções práticas em dados e automação para o seu negócio crescer com clareza.
           </motion.p>
 
           <motion.div
-            className="flex flex-col gap-3 sm:flex-row"
+            className="flex flex-col items-start gap-3 sm:flex-row sm:items-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.45 }}
@@ -105,20 +104,17 @@ export function HeroSection() {
               target="_blank" rel="noreferrer"
               whileHover={{ scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-brand px-6 text-sm font-semibold text-primary-foreground shadow-elegant"
+              className="inline-flex h-12 items-center justify-center gap-2 rounded-full bg-gradient-brand px-7 text-sm font-semibold text-primary-foreground shadow-elegant"
             >
               <MessageCircle className="h-4 w-4" />
-              Falar com a Larissa no WhatsApp
+              Agendar consultoria gratuita
             </motion.a>
-            <motion.a
+            <a
               href="#servicos"
-              whileHover={{ scale: 1.04 }}
-              whileTap={{ scale: 0.97 }}
-              className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-border bg-card px-6 text-sm font-semibold text-foreground shadow-card"
+              className="inline-flex items-center gap-1 text-sm font-medium text-muted-foreground hover:text-foreground"
             >
-              Ver todos os serviços
-              <ArrowRight className="h-4 w-4" />
-            </motion.a>
+              Ver serviços <ArrowRight className="h-3.5 w-3.5" />
+            </a>
           </motion.div>
         </motion.div>
 

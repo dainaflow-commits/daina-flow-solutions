@@ -1,5 +1,8 @@
-import { Heart, BrainCircuit, Zap, Handshake } from "lucide-react";
+import { Heart, BrainCircuit, Zap, Handshake, MessageCircle } from "lucide-react";
 import { motion } from "framer-motion";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { buildWhatsappLink, GENERIC_HELLO } from "@/lib/whatsapp";
 
 const items = [
   { icon: BrainCircuit, title: "Visão estratégica + técnica", description: "Entendo o lado humano do negócio e traduzo em automações inteligentes." },
@@ -9,6 +12,12 @@ const items = [
 ];
 
 export function DifferentialSection() {
+  const [whatsapp, setWhatsapp] = useState<string | undefined>();
+  useEffect(() => {
+    supabase.from("site_settings").select("value").eq("key", "whatsapp_number").maybeSingle()
+      .then(({ data }) => setWhatsapp(data?.value || undefined));
+  }, []);
+
   return (
     <section id="diferencial" className="relative border-y border-border/60 bg-secondary/40 py-20 md:py-24">
       <div className="container mx-auto px-4">
@@ -48,6 +57,17 @@ export function DifferentialSection() {
               <p className="text-sm text-muted-foreground leading-relaxed">{description}</p>
             </motion.div>
           ))}
+        </div>
+
+        <div className="mt-12 text-center">
+          <a
+            href={buildWhatsappLink(GENERIC_HELLO, whatsapp)}
+            target="_blank" rel="noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-gradient-brand px-7 py-3 text-sm font-semibold text-primary-foreground shadow-elegant"
+          >
+            <MessageCircle className="h-4 w-4" />
+            Agendar consultoria gratuita
+          </a>
         </div>
       </div>
     </section>
