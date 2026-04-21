@@ -7,11 +7,10 @@ import { LayoutDashboard, LogIn, LogOut, Menu, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 
 const LINKS = [
-  { href: "/#sobre", label: "Sobre" },
   { href: "/#servicos", label: "Serviços" },
+  { href: "/#sobre", label: "Sobre" },
+  { href: "/#faq", label: "FAQ" },
   { href: "/portfolio", label: "Portfólio" },
-  { href: "/#diferencial", label: "Diferencial" },
-  { href: "/#contato", label: "Contato" },
 ];
 
 export function PublicNav() {
@@ -37,7 +36,7 @@ export function PublicNav() {
           {!loading && session && isAdmin && (
             <Link
               to="/dashboard"
-              className="inline-flex h-10 items-center gap-2 rounded-full bg-gradient-brand px-4 text-sm font-semibold text-primary-foreground shadow-elegant transition-smooth hover:opacity-90"
+              className="inline-flex h-10 items-center gap-2 rounded-full border border-border bg-card px-4 text-sm font-semibold transition-smooth hover:border-primary/40"
             >
               <LayoutDashboard className="h-4 w-4" /> Painel
             </Link>
@@ -52,11 +51,17 @@ export function PublicNav() {
           ) : (
             <Link
               to="/login"
-              className="inline-flex h-10 items-center gap-2 rounded-full bg-gradient-brand px-5 text-sm font-semibold text-primary-foreground shadow-elegant transition-smooth hover:opacity-90"
+              className="inline-flex h-10 items-center gap-2 text-sm font-medium text-muted-foreground transition-smooth hover:text-foreground"
             >
               <LogIn className="h-4 w-4" /> Entrar
             </Link>
           )}
+          <a
+            href="/#contato"
+            className="inline-flex h-10 items-center gap-2 rounded-full bg-gradient-brand px-5 text-sm font-semibold text-primary-foreground shadow-elegant transition-smooth hover:opacity-90"
+          >
+            Contato
+          </a>
         </div>
 
         <button

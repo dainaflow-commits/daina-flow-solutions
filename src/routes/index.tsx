@@ -1,9 +1,12 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { PublicNav } from "@/components/site/PublicNav";
 import { HeroSection } from "@/components/site/HeroSection";
+import { SocialProofSection } from "@/components/site/SocialProofSection";
 import { AboutSection } from "@/components/site/AboutSection";
 import { DifferentialSection } from "@/components/site/DifferentialSection";
 import { ServicesSection } from "@/components/site/ServicesSection";
+import { FAQSection } from "@/components/site/FAQSection";
+import { FinalCTASection } from "@/components/site/FinalCTASection";
 
 import { ContactSection } from "@/components/site/ContactSection";
 import { Footer } from "@/components/site/Footer";
@@ -29,10 +32,13 @@ function Index() {
       <PublicNav />
       <main>
         <HeroSection />
-        <DifferentialSection />
+        <SocialProofSection />
         <ServicesSection />
-        <ContactSection />
         <AboutSection />
+        <DifferentialSection />
+        <FAQSection />
+        <ContactSection />
+        <FinalCTASection />
       </main>
       <Footer />
       <WhatsappFloat />
