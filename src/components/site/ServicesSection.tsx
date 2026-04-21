@@ -75,18 +75,24 @@ export function ServicesSection() {
                     {s.price_text}
                   </p>
                 )}
-                <Link
-                  to="/servicos/$slug" params={{ slug: s.slug }}
+                <button
+                  type="button"
+                  onClick={() => setOpenSlug(s.slug)}
                   className="inline-flex items-center justify-between gap-2 rounded-xl bg-secondary px-4 py-2.5 text-sm font-semibold text-secondary-foreground transition-smooth hover:bg-gradient-brand hover:text-primary-foreground"
                 >
                   Ver detalhes
                   <ArrowUpRight className="h-4 w-4 transition-transform group-hover:translate-x-1 group-hover:-translate-y-1" />
-                </Link>
+                </button>
               </motion.article>
             );
           })}
         </div>
       </div>
+      <ServiceDetailsDrawer
+        slug={openSlug}
+        open={!!openSlug}
+        onOpenChange={(o) => !o && setOpenSlug(null)}
+      />
     </section>
   );
 }
