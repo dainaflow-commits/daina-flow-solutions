@@ -9,7 +9,7 @@ export function Footer() {
           <BrandLogo size="md" />
         </div>
         <p className="text-sm text-muted-foreground">
-          © 2026 Daina Flow — Larissa Daina dos Santos Quirino
+          © 2026 Daina Flow
         </p>
         <p className="mt-1 text-xs text-muted-foreground">
           Transformando dados em decisões inteligentes · Igarapé-MG e região
