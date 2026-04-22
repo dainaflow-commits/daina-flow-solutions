@@ -54,6 +54,15 @@ export function SocialProofSection() {
                     alt={t.name}
                     className="h-4 w-4 object-contain"
                     loading="lazy"
+                    onError={(e) => {
+                      const img = e.currentTarget;
+                      const fallback = document.createElement("span");
+                      fallback.className =
+                        "grid h-4 w-4 place-items-center rounded-sm text-[8px] font-black text-white";
+                      fallback.style.background = `#${t.color}`;
+                      fallback.textContent = t.name.charAt(0).toLowerCase();
+                      img.replaceWith(fallback);
+                    }}
                   />
                 ) : (
                   <span
@@ -61,7 +70,7 @@ export function SocialProofSection() {
                     style={{ background: `#${t.color}` }}
                     aria-hidden
                   >
-                    b
+                    {(t as { mono?: string }).mono ?? t.name.charAt(0).toLowerCase()}
                   </span>
                 )}
                 {t.name}
