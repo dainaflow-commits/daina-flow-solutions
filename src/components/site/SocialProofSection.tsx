@@ -1,7 +1,8 @@
 import { motion } from "framer-motion";
 import { Sparkles, Clock, Users, TrendingUp } from "lucide-react";
 
-// Logos oficiais via simple-icons CDN (SVG colorido por slug + cor hex da marca)
+// Logos oficiais via simple-icons CDN. Slugs verificados em simpleicons.org.
+// Para marcas sem ícone público (Lovable, base44, Pipefy) usamos um monograma colorido.
 const tools = [
   { name: "Excel", slug: "microsoftexcel", color: "217346" },
   { name: "Power BI", slug: "powerbi", color: "F2C811" },
@@ -10,9 +11,9 @@ const tools = [
   { name: "WhatsApp", slug: "whatsapp", color: "25D366" },
   { name: "Make", slug: "make", color: "6D00CC" },
   { name: "Airtable", slug: "airtable", color: "18BFFF" },
-  { name: "Pipefy", slug: "pipefy", color: "00B884" },
-  { name: "Lovable", slug: "lovable", color: "FF5757" },
-  { name: "base44", slug: null as string | null, color: "0EA5E9" },
+  { name: "Pipefy", slug: null as string | null, color: "00B884", mono: "P" },
+  { name: "Lovable", slug: null as string | null, color: "FF5757", mono: "L" },
+  { name: "base44", slug: null as string | null, color: "0EA5E9", mono: "b" },
 ];
 
 const metrics = [
@@ -53,6 +54,15 @@ export function SocialProofSection() {
                     alt={t.name}
                     className="h-4 w-4 object-contain"
                     loading="lazy"
+                    onError={(e) => {
+                      const img = e.currentTarget;
+                      const fallback = document.createElement("span");
+                      fallback.className =
+                        "grid h-4 w-4 place-items-center rounded-sm text-[8px] font-black text-white";
+                      fallback.style.background = `#${t.color}`;
+                      fallback.textContent = t.name.charAt(0).toLowerCase();
+                      img.replaceWith(fallback);
+                    }}
                   />
                 ) : (
                   <span
@@ -60,7 +70,7 @@ export function SocialProofSection() {
                     style={{ background: `#${t.color}` }}
                     aria-hidden
                   >
-                    b
+                    {(t as { mono?: string }).mono ?? t.name.charAt(0).toLowerCase()}
                   </span>
                 )}
                 {t.name}
