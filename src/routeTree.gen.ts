@@ -30,6 +30,7 @@ import { Route as DashboardResultadosRouteImport } from './routes/dashboard.resu
 import { Route as DashboardPropostasRouteImport } from './routes/dashboard.propostas'
 import { Route as DashboardProjetosRouteImport } from './routes/dashboard.projetos'
 import { Route as DashboardPortfolioRouteImport } from './routes/dashboard.portfolio'
+import { Route as DashboardOrcamentoIaRouteImport } from './routes/dashboard.orcamento-ia'
 import { Route as DashboardNotificacoesRouteImport } from './routes/dashboard.notificacoes'
 import { Route as DashboardLegalRouteImport } from './routes/dashboard.legal'
 import { Route as DashboardLeadsRouteImport } from './routes/dashboard.leads'
@@ -153,6 +154,11 @@ const DashboardPortfolioRoute = DashboardPortfolioRouteImport.update({
   path: '/dashboard/portfolio',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DashboardOrcamentoIaRoute = DashboardOrcamentoIaRouteImport.update({
+  id: '/dashboard/orcamento-ia',
+  path: '/dashboard/orcamento-ia',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const DashboardNotificacoesRoute = DashboardNotificacoesRouteImport.update({
   id: '/dashboard/notificacoes',
   path: '/dashboard/notificacoes',
@@ -256,6 +262,7 @@ export interface FileRoutesByFullPath {
   '/dashboard/leads': typeof DashboardLeadsRoute
   '/dashboard/legal': typeof DashboardLegalRoute
   '/dashboard/notificacoes': typeof DashboardNotificacoesRoute
+  '/dashboard/orcamento-ia': typeof DashboardOrcamentoIaRoute
   '/dashboard/portfolio': typeof DashboardPortfolioRoute
   '/dashboard/projetos': typeof DashboardProjetosRoute
   '/dashboard/propostas': typeof DashboardPropostasRouteWithChildren
@@ -296,6 +303,7 @@ export interface FileRoutesByTo {
   '/dashboard/leads': typeof DashboardLeadsRoute
   '/dashboard/legal': typeof DashboardLegalRoute
   '/dashboard/notificacoes': typeof DashboardNotificacoesRoute
+  '/dashboard/orcamento-ia': typeof DashboardOrcamentoIaRoute
   '/dashboard/portfolio': typeof DashboardPortfolioRoute
   '/dashboard/projetos': typeof DashboardProjetosRoute
   '/dashboard/propostas': typeof DashboardPropostasRouteWithChildren
@@ -337,6 +345,7 @@ export interface FileRoutesById {
   '/dashboard/leads': typeof DashboardLeadsRoute
   '/dashboard/legal': typeof DashboardLegalRoute
   '/dashboard/notificacoes': typeof DashboardNotificacoesRoute
+  '/dashboard/orcamento-ia': typeof DashboardOrcamentoIaRoute
   '/dashboard/portfolio': typeof DashboardPortfolioRoute
   '/dashboard/projetos': typeof DashboardProjetosRoute
   '/dashboard/propostas': typeof DashboardPropostasRouteWithChildren
@@ -379,6 +388,7 @@ export interface FileRouteTypes {
     | '/dashboard/leads'
     | '/dashboard/legal'
     | '/dashboard/notificacoes'
+    | '/dashboard/orcamento-ia'
     | '/dashboard/portfolio'
     | '/dashboard/projetos'
     | '/dashboard/propostas'
@@ -419,6 +429,7 @@ export interface FileRouteTypes {
     | '/dashboard/leads'
     | '/dashboard/legal'
     | '/dashboard/notificacoes'
+    | '/dashboard/orcamento-ia'
     | '/dashboard/portfolio'
     | '/dashboard/projetos'
     | '/dashboard/propostas'
@@ -459,6 +470,7 @@ export interface FileRouteTypes {
     | '/dashboard/leads'
     | '/dashboard/legal'
     | '/dashboard/notificacoes'
+    | '/dashboard/orcamento-ia'
     | '/dashboard/portfolio'
     | '/dashboard/projetos'
     | '/dashboard/propostas'
@@ -500,6 +512,7 @@ export interface RootRouteChildren {
   DashboardLeadsRoute: typeof DashboardLeadsRoute
   DashboardLegalRoute: typeof DashboardLegalRoute
   DashboardNotificacoesRoute: typeof DashboardNotificacoesRoute
+  DashboardOrcamentoIaRoute: typeof DashboardOrcamentoIaRoute
   DashboardPortfolioRoute: typeof DashboardPortfolioRoute
   DashboardProjetosRoute: typeof DashboardProjetosRoute
   DashboardPropostasRoute: typeof DashboardPropostasRouteWithChildren
@@ -666,6 +679,13 @@ declare module '@tanstack/react-router' {
       path: '/dashboard/portfolio'
       fullPath: '/dashboard/portfolio'
       preLoaderRoute: typeof DashboardPortfolioRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/dashboard/orcamento-ia': {
+      id: '/dashboard/orcamento-ia'
+      path: '/dashboard/orcamento-ia'
+      fullPath: '/dashboard/orcamento-ia'
+      preLoaderRoute: typeof DashboardOrcamentoIaRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dashboard/notificacoes': {
@@ -865,6 +885,7 @@ const rootRouteChildren: RootRouteChildren = {
   DashboardLeadsRoute: DashboardLeadsRoute,
   DashboardLegalRoute: DashboardLegalRoute,
   DashboardNotificacoesRoute: DashboardNotificacoesRoute,
+  DashboardOrcamentoIaRoute: DashboardOrcamentoIaRoute,
   DashboardPortfolioRoute: DashboardPortfolioRoute,
   DashboardProjetosRoute: DashboardProjetosRoute,
   DashboardPropostasRoute: DashboardPropostasRouteWithChildren,
