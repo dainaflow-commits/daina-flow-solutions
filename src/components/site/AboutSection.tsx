@@ -66,7 +66,7 @@ export function AboutSection() {
 
           <div className="grid gap-3 pt-4 sm:grid-cols-3">
             <InfoChip icon={<Briefcase className="h-4 w-4" />} label="Analista Adm. Jr." />
-            <InfoChip icon={<GraduationCap className="h-4 w-4" />} label="ADS · em curso" />
+            <InfoChip icon={<GraduationCap className="h-4 w-4" />} label="Graduação completa" />
             <InfoChip icon={<MapPin className="h-4 w-4" />} label="Igarapé-MG" />
           </div>
         </motion.div>
