@@ -54,7 +54,10 @@ const NAV: NavGroup[] = [
   },
   {
     label: "Financeiro",
-    items: [{ to: "/dashboard/fluxo-caixa", label: "Fluxo de Caixa", icon: DollarSign }],
+    items: [
+      { to: "/dashboard/fluxo-caixa", label: "Fluxo de Caixa", icon: DollarSign },
+      { to: "/dashboard/orcamento-ia", label: "Orçamento IA", icon: DollarSign },
+    ],
   },
   {
     label: "Conteúdo",
