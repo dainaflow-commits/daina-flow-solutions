@@ -8,3 +8,6 @@ verify_jwt = false
 
 [functions.suggest-ticket-reply]
 verify_jwt = true
+
+[functions.quote-ai]
+verify_jwt = true
