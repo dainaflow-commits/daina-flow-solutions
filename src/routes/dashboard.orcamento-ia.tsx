@@ -192,7 +192,14 @@ function Page() {
                     </div>
                     <div className="flex gap-2">
                       <button onClick={() => loadFromHistory(h)} className="rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">Abrir</button>
-                      <button onClick={() => exportPdf(h.result, h, h.created_at)} className="inline-flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">
+                      <button onClick={() => exportPdf(h.result, {
+                        description: h.description,
+                        complexity: h.complexity ?? undefined,
+                        deadline: h.deadline ?? undefined,
+                        urgency: h.urgency ?? undefined,
+                        client_profile: h.client_profile ?? undefined,
+                        pricing_style: h.pricing_style ?? undefined,
+                      }, h.created_at)} className="inline-flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">
                         <FileDown className="h-3 w-3" /> PDF
                       </button>
                       <button onClick={() => deleteHistoryItem(h.id)} className="rounded-lg p-1.5 text-destructive hover:bg-destructive/10">
