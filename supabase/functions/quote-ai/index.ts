@@ -8,7 +8,7 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const { description, complexity, deadline, client_profile } = await req.json();
+    const { description, complexity, deadline, urgency, client_profile, pricing_style } = await req.json();
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY não configurada");
     if (!description) throw new Error("description é obrigatório");
@@ -38,7 +38,9 @@ Retorne APENAS JSON válido, sem markdown.`;
     const userPrompt = `Descrição do serviço: ${description}
 Complexidade percebida: ${complexity ?? "não informada"}
 Prazo solicitado: ${deadline ?? "não informado"}
+Urgência: ${urgency ?? "normal"}
 Perfil do cliente: ${client_profile ?? "não informado"}
+Estilo de cobrança preferido pela Larissa: ${pricing_style ?? "equilibrado"} (use isso para calibrar os 3 valores — "conservador" puxa para baixo, "premium" puxa para cima, "equilibrado" mantém faixa de mercado; em "urgente alto" aplique +20-40% de adicional)
 
 Sugira o orçamento agora.`;
 

@@ -1,39 +1,54 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { DashboardLayout } from "@/components/admin/DashboardLayout";
 import { supabase } from "@/integrations/supabase/client";
-import { Sparkles, Loader2, DollarSign, Clock, Users, AlertTriangle, Lightbulb, Star } from "lucide-react";
+import {
+  Sparkles, Loader2, DollarSign, Clock, Users, AlertTriangle,
+  Lightbulb, Star, History, FileDown, Trash2,
+} from "lucide-react";
 import { toast } from "sonner";
+import { generateQuotePdf, type QuoteTier, type QuotePdfData } from "@/lib/quotePdf";
 
 export const Route = createFileRoute("/dashboard/orcamento-ia")({
   head: () => ({ meta: [{ title: "Orçamento IA — Admin" }] }),
   component: () => <DashboardLayout><Page /></DashboardLayout>,
 });
 
-interface Tier {
-  name: string;
-  price_min: number;
-  price_max: number;
-  scope_summary: string;
-  justification: string;
-  estimated_hours: number;
-  ideal_for: string;
-}
 interface QuoteResult {
   analysis: string;
   recommended_tier: string;
   pricing_strategy: string;
   red_flags?: string[];
-  tiers?: Tier[];
-  // Alguns modelos retornam estrutura ligeiramente diferente
-  Econômico?: Tier;
-  Recomendado?: Tier;
-  Premium?: Tier;
+  tiers?: QuoteTier[];
+  Econômico?: QuoteTier;
+  Recomendado?: QuoteTier;
+  Premium?: QuoteTier;
 }
 
-function normalizeTiers(r: QuoteResult): Tier[] {
+interface QuoteForm {
+  description: string;
+  complexity: string;
+  deadline: string;
+  urgency: string;
+  client_profile: string;
+  pricing_style: string;
+}
+
+interface HistoryRow {
+  id: string;
+  description: string;
+  complexity: string | null;
+  deadline: string | null;
+  urgency: string | null;
+  client_profile: string | null;
+  pricing_style: string | null;
+  result: QuoteResult;
+  created_at: string;
+}
+
+function normalizeTiers(r: QuoteResult): QuoteTier[] {
   if (Array.isArray(r.tiers) && r.tiers.length) return r.tiers;
-  const arr: Tier[] = [];
+  const arr: QuoteTier[] = [];
   (["Econômico", "Recomendado", "Premium"] as const).forEach((k) => {
     const t = (r as any)[k];
     if (t) arr.push({ ...t, name: k });
@@ -45,48 +60,159 @@ const fmt = (n: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(n);
 
 function Page() {
-  const [form, setForm] = useState({
+  const [form, setForm] = useState<QuoteForm>({
     description: "",
     complexity: "Média",
     deadline: "",
+    urgency: "Normal",
     client_profile: "",
+    pricing_style: "Equilibrado",
   });
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<QuoteResult | null>(null);
+  const [history, setHistory] = useState<HistoryRow[]>([]);
+  const [showHistory, setShowHistory] = useState(false);
+
+  async function loadHistory() {
+    const { data, error } = await supabase
+      .from("ai_quotes").select("*")
+      .order("created_at", { ascending: false }).limit(50);
+    if (!error && data) setHistory(data as any);
+  }
+  useEffect(() => { loadHistory(); }, []);
 
   async function generate() {
-    if (!form.description.trim()) {
-      toast.error("Descreva o serviço primeiro");
-      return;
-    }
-    setLoading(true);
-    setResult(null);
+    if (!form.description.trim()) { toast.error("Descreva o serviço primeiro"); return; }
+    setLoading(true); setResult(null);
     try {
       const { data, error } = await supabase.functions.invoke("quote-ai", { body: form });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      setResult(data as QuoteResult);
-      toast.success("Orçamento gerado!");
+      const res = data as QuoteResult;
+      setResult(res);
+
+      // Save in history
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        await supabase.from("ai_quotes").insert({
+          user_id: user.id,
+          description: form.description,
+          complexity: form.complexity,
+          deadline: form.deadline,
+          urgency: form.urgency,
+          client_profile: form.client_profile,
+          pricing_style: form.pricing_style,
+          result: res as any,
+        });
+        loadHistory();
+      }
+      toast.success("Orçamento gerado e salvo no histórico!");
     } catch (e: any) {
       toast.error(e?.message ?? "Erro ao gerar orçamento");
-    } finally {
-      setLoading(false);
-    }
+    } finally { setLoading(false); }
+  }
+
+  function exportPdf(r: QuoteResult, f: Partial<QuoteForm>, createdAt?: string) {
+    const tiers = normalizeTiers(r);
+    if (!tiers.length) { toast.error("Sem faixas para exportar"); return; }
+    const data: QuotePdfData = {
+      description: f.description || "",
+      complexity: f.complexity, deadline: f.deadline, urgency: f.urgency,
+      client_profile: f.client_profile, pricing_style: f.pricing_style,
+      analysis: r.analysis, pricing_strategy: r.pricing_strategy,
+      recommended_tier: r.recommended_tier, red_flags: r.red_flags,
+      tiers, created_at: createdAt,
+    };
+    generateQuotePdf(data);
+  }
+
+  async function deleteHistoryItem(id: string) {
+    if (!confirm("Excluir este orçamento do histórico?")) return;
+    const { error } = await supabase.from("ai_quotes").delete().eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    toast.success("Removido");
+    loadHistory();
+  }
+
+  function loadFromHistory(h: HistoryRow) {
+    setForm({
+      description: h.description,
+      complexity: h.complexity || "Média",
+      deadline: h.deadline || "",
+      urgency: h.urgency || "Normal",
+      client_profile: h.client_profile || "",
+      pricing_style: h.pricing_style || "Equilibrado",
+    });
+    setResult(h.result);
+    setShowHistory(false);
+    toast.success("Orçamento carregado");
   }
 
   const tiers = result ? normalizeTiers(result) : [];
 
   return (
     <div className="space-y-8">
-      <header className="flex items-center gap-3">
-        <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-brand text-primary-foreground">
-          <Sparkles className="h-6 w-6" />
+      <header className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-3">
+          <div className="grid h-12 w-12 place-items-center rounded-2xl bg-gradient-brand text-primary-foreground">
+            <Sparkles className="h-6 w-6" />
+          </div>
+          <div>
+            <h1 className="font-display text-2xl font-bold">Orçamento com IA</h1>
+            <p className="text-sm text-muted-foreground">Descreva o serviço e receba 3 faixas de preço com justificativa.</p>
+          </div>
         </div>
-        <div>
-          <h1 className="font-display text-2xl font-bold">Orçamento com IA</h1>
-          <p className="text-sm text-muted-foreground">Descreva o serviço e receba 3 faixas de preço com justificativa.</p>
-        </div>
+        <button
+          onClick={() => setShowHistory((v) => !v)}
+          className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold hover:bg-secondary"
+        >
+          <History className="h-4 w-4" /> Histórico ({history.length})
+        </button>
       </header>
+
+      {showHistory && (
+        <section className="rounded-2xl border border-border bg-card p-6 shadow-card">
+          <h2 className="font-display text-lg font-bold mb-4">Histórico de orçamentos</h2>
+          {history.length === 0 ? (
+            <p className="text-sm text-muted-foreground">Nenhum orçamento salvo ainda.</p>
+          ) : (
+            <ul className="divide-y divide-border">
+              {history.map((h) => {
+                const ts = normalizeTiers(h.result);
+                const min = Math.min(...ts.map((t) => t.price_min));
+                const max = Math.max(...ts.map((t) => t.price_max || t.price_min));
+                return (
+                  <li key={h.id} className="flex flex-col gap-2 py-3 md:flex-row md:items-center md:gap-4">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(h.created_at).toLocaleString("pt-BR")} · {h.complexity} · {h.urgency}
+                      </p>
+                      <p className="truncate text-sm font-medium">{h.description}</p>
+                      <p className="text-xs text-muted-foreground">{fmt(min)} — {fmt(max)}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <button onClick={() => loadFromHistory(h)} className="rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">Abrir</button>
+                      <button onClick={() => exportPdf(h.result, {
+                        description: h.description,
+                        complexity: h.complexity ?? undefined,
+                        deadline: h.deadline ?? undefined,
+                        urgency: h.urgency ?? undefined,
+                        client_profile: h.client_profile ?? undefined,
+                        pricing_style: h.pricing_style ?? undefined,
+                      }, h.created_at)} className="inline-flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">
+                        <FileDown className="h-3 w-3" /> PDF
+                      </button>
+                      <button onClick={() => deleteHistoryItem(h.id)} className="rounded-lg p-1.5 text-destructive hover:bg-destructive/10">
+                        <Trash2 className="h-3.5 w-3.5" />
+                      </button>
+                    </div>
+                  </li>
+                );
+              })}
+            </ul>
+          )}
+        </section>
+      )}
 
       <section className="rounded-2xl border border-border bg-card p-6 shadow-card">
         <div className="grid gap-4">
@@ -100,41 +226,46 @@ function Page() {
               className="w-full rounded-xl border border-input bg-background p-3 text-sm"
             />
           </div>
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             <div>
               <label className="block text-sm font-semibold mb-2">Complexidade</label>
-              <select
-                value={form.complexity}
-                onChange={(e) => setForm({ ...form, complexity: e.target.value })}
-                className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
-              >
-                <option>Baixa</option>
-                <option>Média</option>
-                <option>Alta</option>
+              <select value={form.complexity} onChange={(e) => setForm({ ...form, complexity: e.target.value })}
+                className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm">
+                <option>Baixa</option><option>Média</option><option>Alta</option><option>Muito Alta</option>
               </select>
             </div>
             <div>
               <label className="block text-sm font-semibold mb-2">Prazo</label>
-              <input
-                value={form.deadline}
-                onChange={(e) => setForm({ ...form, deadline: e.target.value })}
+              <input value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })}
                 placeholder="Ex.: 30 dias"
-                className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
-              />
+                className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm" />
+            </div>
+            <div>
+              <label className="block text-sm font-semibold mb-2">Urgência</label>
+              <select value={form.urgency} onChange={(e) => setForm({ ...form, urgency: e.target.value })}
+                className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm">
+                <option>Baixa</option><option>Normal</option><option>Alta</option><option>Urgente (fim de semana / 24h)</option>
+              </select>
             </div>
             <div>
               <label className="block text-sm font-semibold mb-2">Perfil do cliente</label>
-              <input
-                value={form.client_profile}
-                onChange={(e) => setForm({ ...form, client_profile: e.target.value })}
+              <input value={form.client_profile} onChange={(e) => setForm({ ...form, client_profile: e.target.value })}
                 placeholder="Ex.: PME 30 funcionários"
-                className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
-              />
+                className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm" />
+            </div>
+            <div className="lg:col-span-2">
+              <label className="block text-sm font-semibold mb-2">Estilo de cobrança</label>
+              <select value={form.pricing_style} onChange={(e) => setForm({ ...form, pricing_style: e.target.value })}
+                className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm">
+                <option>Conservador (entrar com preço acessível)</option>
+                <option>Equilibrado</option>
+                <option>Premium (posicionamento de valor alto)</option>
+              </select>
+              <p className="mt-1 text-xs text-muted-foreground">A IA usa este estilo para calibrar as 3 faixas ao seu posicionamento.</p>
             </div>
           </div>
           <button
-            onClick={generate}
-            disabled={loading}
+            onClick={generate} disabled={loading}
             className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-brand px-5 text-sm font-semibold text-primary-foreground shadow-elegant disabled:opacity-60"
           >
             {loading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Sparkles className="h-4 w-4" />}
@@ -146,8 +277,18 @@ function Page() {
       {result && (
         <section className="space-y-6">
           <div className="rounded-2xl border border-border bg-card p-6 shadow-card">
-            <h2 className="font-display text-lg font-bold mb-2">Análise</h2>
-            <p className="text-sm text-muted-foreground">{result.analysis}</p>
+            <div className="mb-4 flex items-start justify-between gap-3">
+              <div>
+                <h2 className="font-display text-lg font-bold">Análise</h2>
+                <p className="mt-1 text-sm text-muted-foreground">{result.analysis}</p>
+              </div>
+              <button
+                onClick={() => exportPdf(result, form)}
+                className="inline-flex shrink-0 items-center gap-2 rounded-xl bg-gradient-brand px-4 py-2 text-sm font-semibold text-primary-foreground shadow-elegant"
+              >
+                <FileDown className="h-4 w-4" /> Exportar PDF
+              </button>
+            </div>
             {result.pricing_strategy && (
               <div className="mt-4 flex gap-3 rounded-xl bg-secondary/50 p-4">
                 <Lightbulb className="h-5 w-5 shrink-0 text-[color:var(--accent-violet)]" />
@@ -171,14 +312,10 @@ function Page() {
             {tiers.map((t) => {
               const isRecommended = result.recommended_tier === t.name;
               return (
-                <div
-                  key={t.name}
+                <div key={t.name}
                   className={`relative rounded-2xl border p-6 shadow-card ${
-                    isRecommended
-                      ? "border-primary bg-gradient-to-b from-primary/5 to-card"
-                      : "border-border bg-card"
-                  }`}
-                >
+                    isRecommended ? "border-primary bg-gradient-to-b from-primary/5 to-card" : "border-border bg-card"
+                  }`}>
                   {isRecommended && (
                     <span className="absolute -top-3 left-6 inline-flex items-center gap-1 rounded-full bg-gradient-brand px-3 py-1 text-xs font-semibold text-primary-foreground">
                       <Star className="h-3 w-3" /> Recomendado
