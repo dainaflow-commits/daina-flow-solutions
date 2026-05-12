@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_quotes: {
+        Row: {
+          client_profile: string | null
+          complexity: string | null
+          created_at: string
+          deadline: string | null
+          description: string
+          id: string
+          pricing_style: string | null
+          result: Json
+          urgency: string | null
+          user_id: string
+        }
+        Insert: {
+          client_profile?: string | null
+          complexity?: string | null
+          created_at?: string
+          deadline?: string | null
+          description: string
+          id?: string
+          pricing_style?: string | null
+          result: Json
+          urgency?: string | null
+          user_id: string
+        }
+        Update: {
+          client_profile?: string | null
+          complexity?: string | null
+          created_at?: string
+          deadline?: string | null
+          description?: string
+          id?: string
+          pricing_style?: string | null
+          result?: Json
+          urgency?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       clients: {
         Row: {
           company: string | null
