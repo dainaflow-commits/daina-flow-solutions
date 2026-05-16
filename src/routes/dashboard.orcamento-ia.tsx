@@ -43,8 +43,20 @@ interface HistoryRow {
   client_profile: string | null;
   pricing_style: string | null;
   result: QuoteResult;
+  status: string | null;
+  notes: string | null;
   created_at: string;
 }
+
+const STATUSES = ["rascunho", "enviado", "aprovado", "faturado"] as const;
+type QuoteStatus = (typeof STATUSES)[number];
+
+const STATUS_STYLES: Record<QuoteStatus, string> = {
+  rascunho: "bg-secondary text-muted-foreground",
+  enviado: "bg-blue-500/15 text-blue-600 dark:text-blue-300",
+  aprovado: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300",
+  faturado: "bg-violet-500/15 text-violet-600 dark:text-violet-300",
+};
 
 function normalizeTiers(r: QuoteResult): QuoteTier[] {
   if (Array.isArray(r.tiers) && r.tiers.length) return r.tiers;
