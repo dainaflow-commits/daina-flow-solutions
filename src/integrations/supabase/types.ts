@@ -22,8 +22,11 @@ export type Database = {
           deadline: string | null
           description: string
           id: string
+          notes: string | null
           pricing_style: string | null
           result: Json
+          status: string
+          updated_at: string
           urgency: string | null
           user_id: string
         }
@@ -34,8 +37,11 @@ export type Database = {
           deadline?: string | null
           description: string
           id?: string
+          notes?: string | null
           pricing_style?: string | null
           result: Json
+          status?: string
+          updated_at?: string
           urgency?: string | null
           user_id: string
         }
@@ -46,8 +52,11 @@ export type Database = {
           deadline?: string | null
           description?: string
           id?: string
+          notes?: string | null
           pricing_style?: string | null
           result?: Json
+          status?: string
+          updated_at?: string
           urgency?: string | null
           user_id?: string
         }
