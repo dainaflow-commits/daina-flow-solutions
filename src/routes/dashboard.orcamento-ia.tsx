@@ -58,6 +58,14 @@ const STATUS_STYLES: Record<QuoteStatus, string> = {
   faturado: "bg-violet-500/15 text-violet-600 dark:text-violet-300",
 };
 
+interface AuditEntry {
+  id: string;
+  from_status: string | null;
+  to_status: string;
+  changed_by_email: string | null;
+  created_at: string;
+}
+
 function normalizeTiers(r: QuoteResult): QuoteTier[] {
   if (Array.isArray(r.tiers) && r.tiers.length) return r.tiers;
   const arr: QuoteTier[] = [];
