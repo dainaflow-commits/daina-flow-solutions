@@ -124,7 +124,12 @@ function Page() {
     } finally { setLoading(false); }
   }
 
-  function exportPdf(r: QuoteResult, f: Partial<QuoteForm>, createdAt?: string) {
+  async function exportPdf(
+    r: QuoteResult,
+    f: Partial<QuoteForm>,
+    createdAt?: string,
+    extra?: { status?: string | null; notes?: string | null },
+  ) {
     const tiers = normalizeTiers(r);
     if (!tiers.length) { toast.error("Sem faixas para exportar"); return; }
     const data: QuotePdfData = {
@@ -134,8 +139,10 @@ function Page() {
       analysis: r.analysis, pricing_strategy: r.pricing_strategy,
       recommended_tier: r.recommended_tier, red_flags: r.red_flags,
       tiers, created_at: createdAt,
+      status: extra?.status ?? undefined,
+      notes: extra?.notes ?? undefined,
     };
-    generateQuotePdf(data);
+    await generateQuotePdf(data);
   }
 
   async function deleteHistoryItem(id: string) {
@@ -144,6 +151,20 @@ function Page() {
     if (error) { toast.error(error.message); return; }
     toast.success("Removido");
     loadHistory();
+  }
+
+  async function updateStatus(id: string, status: QuoteStatus) {
+    const { error } = await supabase.from("ai_quotes").update({ status }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    setHistory((prev) => prev.map((h) => (h.id === id ? { ...h, status } : h)));
+    toast.success("Status atualizado");
+  }
+
+  async function saveNotes(id: string, notes: string) {
+    const { error } = await supabase.from("ai_quotes").update({ notes }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    setHistory((prev) => prev.map((h) => (h.id === id ? { ...h, notes } : h)));
+    toast.success("Observações salvas");
   }
 
   function loadFromHistory(h: HistoryRow) {
