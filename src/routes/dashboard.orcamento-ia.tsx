@@ -180,7 +180,7 @@ function Page() {
       .eq("quote_id", quoteId)
       .order("created_at", { ascending: false });
     if (error) { toast.error(error.message); return; }
-    setAuditLogs((prev) => ({ ...prev, [quoteId]: (data || []) as AuditEntry[] }));
+    setAuditLogs((prev) => ({ ...prev, [quoteId]: (data || []) as unknown as AuditEntry[] }));
   }
 
   async function toggleAudit(quoteId: string) {
