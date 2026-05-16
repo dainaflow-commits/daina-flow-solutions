@@ -396,3 +396,26 @@ function Page() {
     </div>
   );
 }
+
+function NotesEditor({ initial, onSave }: { initial: string; onSave: (v: string) => void }) {
+  const [val, setVal] = useState(initial);
+  const dirty = val !== initial;
+  return (
+    <div className="flex flex-col gap-2 rounded-xl bg-secondary/40 p-3 md:flex-row md:items-start">
+      <textarea
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
+        rows={2}
+        placeholder="Observações do ciclo de vendas (ex.: enviado por e-mail, aguardando retorno, cliente pediu desconto…)"
+        className="flex-1 resize-none rounded-lg border border-input bg-background px-3 py-2 text-xs"
+      />
+      <button
+        onClick={() => onSave(val)}
+        disabled={!dirty}
+        className="inline-flex h-8 shrink-0 items-center gap-1 self-end rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground disabled:opacity-50"
+      >
+        <Save className="h-3 w-3" /> Salvar
+      </button>
+    </div>
+  );
+}
