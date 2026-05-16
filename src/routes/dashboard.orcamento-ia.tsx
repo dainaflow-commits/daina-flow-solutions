@@ -235,14 +235,44 @@ function Page() {
       {showHistory && (
         <section className="rounded-2xl border border-border bg-card p-6 shadow-card">
           <h2 className="font-display text-lg font-bold mb-4">Histórico de orçamentos</h2>
-          {history.length === 0 ? (
-            <p className="text-sm text-muted-foreground">Nenhum orçamento salvo ainda.</p>
-          ) : (
+          <div className="mb-4 grid gap-3 md:grid-cols-2">
+            <div className="relative">
+              <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Buscar por palavras-chave do serviço…"
+                className="h-10 w-full rounded-xl border border-input bg-background pl-9 pr-3 text-sm"
+              />
+            </div>
+            <div className="relative">
+              <Users className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <input
+                value={searchProfile}
+                onChange={(e) => setSearchProfile(e.target.value)}
+                placeholder="Filtrar por perfil do cliente…"
+                className="h-10 w-full rounded-xl border border-input bg-background pl-9 pr-3 text-sm"
+              />
+            </div>
+          </div>
+          {(() => {
+            const q = search.trim().toLowerCase();
+            const qp = searchProfile.trim().toLowerCase();
+            const filtered = history.filter((h) => {
+              const matchDesc = !q || (h.description || "").toLowerCase().includes(q);
+              const matchProf = !qp || (h.client_profile || "").toLowerCase().includes(qp);
+              return matchDesc && matchProf;
+            });
+            if (history.length === 0) return <p className="text-sm text-muted-foreground">Nenhum orçamento salvo ainda.</p>;
+            if (filtered.length === 0) return <p className="text-sm text-muted-foreground">Nenhum resultado para os filtros aplicados.</p>;
+            return (
             <ul className="divide-y divide-border">
-              {history.map((h) => {
+              {filtered.map((h) => {
                 const ts = normalizeTiers(h.result);
                 const min = Math.min(...ts.map((t) => t.price_min));
                 const max = Math.max(...ts.map((t) => t.price_max || t.price_min));
+                const isOpen = expandedAudit === h.id;
+                const logs = auditLogs[h.id] || [];
                 return (
                   <li key={h.id} className="flex flex-col gap-3 py-4">
                     <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
@@ -254,6 +284,11 @@ function Page() {
                           <p className="text-xs text-muted-foreground">
                             {new Date(h.created_at).toLocaleString("pt-BR")} · {h.complexity} · {h.urgency}
                           </p>
+                          {h.client_profile && (
+                            <span className="inline-flex items-center gap-1 rounded-full bg-secondary px-2 py-0.5 text-[10px] font-semibold text-muted-foreground">
+                              <Users className="h-3 w-3" /> {h.client_profile}
+                            </span>
+                          )}
                         </div>
                         <p className="mt-1 truncate text-sm font-medium">{h.description}</p>
                         <p className="text-xs text-muted-foreground">{fmt(min)} — {fmt(max)}</p>
@@ -266,6 +301,9 @@ function Page() {
                         >
                           {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
                         </select>
+                        <button onClick={() => toggleAudit(h.id)} className="inline-flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">
+                          <Activity className="h-3 w-3" /> Auditoria {isOpen ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                        </button>
                         <button onClick={() => loadFromHistory(h)} className="rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">Abrir</button>
                         <button onClick={() => exportPdf(h.result, {
                           description: h.description,
@@ -282,12 +320,41 @@ function Page() {
                         </button>
                       </div>
                     </div>
+                    {isOpen && (
+                      <div className="rounded-xl border border-border bg-secondary/30 p-3">
+                        <p className="mb-2 text-xs font-bold uppercase tracking-wide text-muted-foreground">Histórico de alterações</p>
+                        {logs.length === 0 ? (
+                          <p className="text-xs text-muted-foreground">Sem alterações registradas.</p>
+                        ) : (
+                          <ul className="space-y-1.5 text-xs">
+                            {logs.map((l) => (
+                              <li key={l.id} className="flex flex-wrap items-center gap-2">
+                                <span className="text-muted-foreground">{new Date(l.created_at).toLocaleString("pt-BR")}</span>
+                                <span>·</span>
+                                <span className="font-semibold">{l.changed_by_email || "—"}</span>
+                                <span>·</span>
+                                {l.from_status ? (
+                                  <>
+                                    <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${STATUS_STYLES[(l.from_status as QuoteStatus) || "rascunho"]}`}>{l.from_status}</span>
+                                    <span>→</span>
+                                  </>
+                                ) : (
+                                  <span className="text-muted-foreground">criado como</span>
+                                )}
+                                <span className={`rounded-full px-2 py-0.5 text-[10px] font-bold uppercase ${STATUS_STYLES[(l.to_status as QuoteStatus) || "rascunho"]}`}>{l.to_status}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+                    )}
                     <NotesEditor initial={h.notes ?? ""} onSave={(v) => saveNotes(h.id, v)} />
                   </li>
                 );
               })}
             </ul>
-          )}
+            );
+          })()}
         </section>
       )}
 
