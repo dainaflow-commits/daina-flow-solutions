@@ -170,6 +170,23 @@ function Page() {
     if (error) { toast.error(error.message); return; }
     setHistory((prev) => prev.map((h) => (h.id === id ? { ...h, status } : h)));
     toast.success("Status atualizado");
+    if (expandedAudit === id) loadAudit(id);
+  }
+
+  async function loadAudit(quoteId: string) {
+    const { data, error } = await supabase
+      .from("ai_quote_status_history" as any)
+      .select("id, from_status, to_status, changed_by_email, created_at")
+      .eq("quote_id", quoteId)
+      .order("created_at", { ascending: false });
+    if (error) { toast.error(error.message); return; }
+    setAuditLogs((prev) => ({ ...prev, [quoteId]: (data || []) as AuditEntry[] }));
+  }
+
+  async function toggleAudit(quoteId: string) {
+    if (expandedAudit === quoteId) { setExpandedAudit(null); return; }
+    setExpandedAudit(quoteId);
+    if (!auditLogs[quoteId]) await loadAudit(quoteId);
   }
 
   async function saveNotes(id: string, notes: string) {
