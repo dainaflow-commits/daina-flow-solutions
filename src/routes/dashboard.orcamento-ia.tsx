@@ -215,30 +215,45 @@ function Page() {
                 const min = Math.min(...ts.map((t) => t.price_min));
                 const max = Math.max(...ts.map((t) => t.price_max || t.price_min));
                 return (
-                  <li key={h.id} className="flex flex-col gap-2 py-3 md:flex-row md:items-center md:gap-4">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(h.created_at).toLocaleString("pt-BR")} · {h.complexity} · {h.urgency}
-                      </p>
-                      <p className="truncate text-sm font-medium">{h.description}</p>
-                      <p className="text-xs text-muted-foreground">{fmt(min)} — {fmt(max)}</p>
+                  <li key={h.id} className="flex flex-col gap-3 py-4">
+                    <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${STATUS_STYLES[(h.status as QuoteStatus) || "rascunho"]}`}>
+                            {h.status || "rascunho"}
+                          </span>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(h.created_at).toLocaleString("pt-BR")} · {h.complexity} · {h.urgency}
+                          </p>
+                        </div>
+                        <p className="mt-1 truncate text-sm font-medium">{h.description}</p>
+                        <p className="text-xs text-muted-foreground">{fmt(min)} — {fmt(max)}</p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <select
+                          value={(h.status as QuoteStatus) || "rascunho"}
+                          onChange={(e) => updateStatus(h.id, e.target.value as QuoteStatus)}
+                          className="h-8 rounded-lg border border-input bg-background px-2 text-xs font-semibold capitalize"
+                        >
+                          {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                        <button onClick={() => loadFromHistory(h)} className="rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">Abrir</button>
+                        <button onClick={() => exportPdf(h.result, {
+                          description: h.description,
+                          complexity: h.complexity ?? undefined,
+                          deadline: h.deadline ?? undefined,
+                          urgency: h.urgency ?? undefined,
+                          client_profile: h.client_profile ?? undefined,
+                          pricing_style: h.pricing_style ?? undefined,
+                        }, h.created_at, { status: h.status, notes: h.notes })} className="inline-flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">
+                          <FileDown className="h-3 w-3" /> PDF
+                        </button>
+                        <button onClick={() => deleteHistoryItem(h.id)} className="rounded-lg p-1.5 text-destructive hover:bg-destructive/10">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <button onClick={() => loadFromHistory(h)} className="rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">Abrir</button>
-                      <button onClick={() => exportPdf(h.result, {
-                        description: h.description,
-                        complexity: h.complexity ?? undefined,
-                        deadline: h.deadline ?? undefined,
-                        urgency: h.urgency ?? undefined,
-                        client_profile: h.client_profile ?? undefined,
-                        pricing_style: h.pricing_style ?? undefined,
-                      }, h.created_at)} className="inline-flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">
-                        <FileDown className="h-3 w-3" /> PDF
-                      </button>
-                      <button onClick={() => deleteHistoryItem(h.id)} className="rounded-lg p-1.5 text-destructive hover:bg-destructive/10">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
+                    <NotesEditor initial={h.notes ?? ""} onSave={(v) => saveNotes(h.id, v)} />
                   </li>
                 );
               })}
