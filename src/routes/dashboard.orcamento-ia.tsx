@@ -4,7 +4,7 @@ import { DashboardLayout } from "@/components/admin/DashboardLayout";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Sparkles, Loader2, DollarSign, Clock, Users, AlertTriangle,
-  Lightbulb, Star, History, FileDown, Trash2,
+  Lightbulb, Star, History, FileDown, Trash2, Save,
 } from "lucide-react";
 import { toast } from "sonner";
 import { generateQuotePdf, type QuoteTier, type QuotePdfData } from "@/lib/quotePdf";
