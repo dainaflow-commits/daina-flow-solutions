@@ -84,6 +84,10 @@ function Page() {
   const [result, setResult] = useState<QuoteResult | null>(null);
   const [history, setHistory] = useState<HistoryRow[]>([]);
   const [showHistory, setShowHistory] = useState(false);
+  const [search, setSearch] = useState("");
+  const [searchProfile, setSearchProfile] = useState("");
+  const [expandedAudit, setExpandedAudit] = useState<string | null>(null);
+  const [auditLogs, setAuditLogs] = useState<Record<string, AuditEntry[]>>({});
 
   async function loadHistory() {
     const { data, error } = await supabase
