@@ -1,4 +1,6 @@
 import jsPDF from "jspdf";
+import QRCode from "qrcode";
+import { buildWhatsappLink, DEFAULT_WHATSAPP } from "./whatsapp";
 
 const fmt = (v: number) =>
   new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL", maximumFractionDigits: 0 }).format(v || 0);
@@ -26,6 +28,8 @@ export interface QuotePdfData {
   red_flags?: string[];
   tiers: QuoteTier[];
   created_at?: string;
+  status?: string;
+  notes?: string;
 }
 
 function brandHeader(doc: jsPDF) {
@@ -71,7 +75,7 @@ function ensure(doc: jsPDF, y: number, needed = 20) {
   return y;
 }
 
-export function generateQuotePdf(q: QuotePdfData) {
+export async function generateQuotePdf(q: QuotePdfData) {
   const doc = new jsPDF();
   const w = doc.internal.pageSize.getWidth();
   brandHeader(doc);
@@ -82,6 +86,13 @@ export function generateQuotePdf(q: QuotePdfData) {
   doc.setFontSize(9);
   const date = q.created_at ? new Date(q.created_at) : new Date();
   doc.text(`Emissão: ${date.toLocaleDateString("pt-BR")} ${date.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" })}`, 14, y);
+  if (q.status) {
+    doc.setFont("helvetica", "bold");
+    doc.setTextColor(14, 116, 144);
+    doc.text(`Status: ${q.status.toUpperCase()}`, w - 14, y, { align: "right" });
+    doc.setFont("helvetica", "normal");
+    doc.setTextColor(80);
+  }
   y += 8;
 
   // Serviço
@@ -91,6 +102,35 @@ export function generateQuotePdf(q: QuotePdfData) {
   const desc = doc.splitTextToSize(q.description, w - 28);
   doc.text(desc, 14, y); y += desc.length * 5 + 4;
 
+  // ===== Resumo executivo =====
+  y = ensure(doc, y, 60);
+  const recTier = q.tiers.find((t) => t.name === q.recommended_tier) || q.tiers[1] || q.tiers[0];
+  const minVal = Math.min(...q.tiers.map((t) => t.price_min));
+  const maxVal = Math.max(...q.tiers.map((t) => t.price_max || t.price_min));
+  const boxY = y;
+  doc.setFillColor(240, 249, 255);
+  doc.setDrawColor(14, 165, 233);
+  doc.roundedRect(14, boxY, w - 28, 44, 4, 4, "FD");
+  doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(14, 116, 144);
+  doc.text("Resumo executivo", 20, boxY + 8);
+  doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(40);
+  doc.text(`Faixa total sugerida: ${fmt(minVal)} — ${fmt(maxVal)}`, 20, boxY + 16);
+  if (recTier) {
+    const recPrice = recTier.price_max > recTier.price_min
+      ? `${fmt(recTier.price_min)} — ${fmt(recTier.price_max)}`
+      : fmt(recTier.price_min);
+    doc.text(`Recomendado: ${recTier.name} (${recPrice}, ~${recTier.estimated_hours}h)`, 20, boxY + 22);
+  }
+  doc.text(`Faixas geradas: ${q.tiers.map((t) => t.name).join(" · ")}`, 20, boxY + 28);
+  const flagCount = q.red_flags?.length || 0;
+  doc.setTextColor(flagCount ? 190 : 40, flagCount ? 30 : 100, flagCount ? 50 : 40);
+  doc.text(
+    flagCount ? `${flagCount} sinal(is) de alerta — revisar antes de enviar` : "Sem sinais de alerta críticos",
+    20, boxY + 34,
+  );
+  doc.setTextColor(40);
+  y = boxY + 48;
+
   // Parâmetros
   const params = [
     ["Complexidade", q.complexity || "—"],
@@ -99,6 +139,7 @@ export function generateQuotePdf(q: QuotePdfData) {
     ["Perfil do cliente", q.client_profile || "—"],
     ["Estilo de cobrança", q.pricing_style || "—"],
   ];
+  y = ensure(doc, y, params.length * 6 + 10);
   doc.setFillColor(241, 245, 249);
   doc.roundedRect(14, y, w - 28, params.length * 6 + 6, 3, 3, "F");
   y += 5;
@@ -174,6 +215,40 @@ export function generateQuotePdf(q: QuotePdfData) {
       y = ensure(doc, y, fl.length * 5);
       doc.text(fl, 14, y); y += fl.length * 5 + 1;
     }
+    y += 4;
+  }
+
+  if (q.notes && q.notes.trim()) {
+    y = ensure(doc, y, 24);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(11); doc.setTextColor(14, 116, 144);
+    doc.text("Observações internas", 14, y); y += 6;
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(60);
+    const nt = doc.splitTextToSize(q.notes, w - 28);
+    doc.text(nt, 14, y); y += nt.length * 5 + 4;
+  }
+
+  // ===== Bloco de contato + QR Code WhatsApp =====
+  y = ensure(doc, y, 60);
+  const waMsg = `Olá Larissa! Recebi o orçamento da Daina Flow e gostaria de conversar sobre: ${q.description.slice(0, 100)}`;
+  const waLink = buildWhatsappLink(waMsg);
+  try {
+    const qrDataUrl = await QRCode.toDataURL(waLink, { width: 240, margin: 1, color: { dark: "#0e7490", light: "#ffffff" } });
+    const blockY = y;
+    doc.setFillColor(240, 249, 255);
+    doc.setDrawColor(14, 165, 233);
+    doc.roundedRect(14, blockY, w - 28, 44, 4, 4, "FD");
+    doc.addImage(qrDataUrl, "PNG", 18, blockY + 4, 36, 36);
+    doc.setFont("helvetica", "bold"); doc.setFontSize(12); doc.setTextColor(14, 116, 144);
+    doc.text("Vamos conversar?", 60, blockY + 12);
+    doc.setFont("helvetica", "normal"); doc.setFontSize(9); doc.setTextColor(60);
+    doc.text("Escaneie o QR Code para falar comigo no WhatsApp", 60, blockY + 19);
+    doc.setFont("helvetica", "bold"); doc.setTextColor(14, 116, 144);
+    doc.text(`+55 ${DEFAULT_WHATSAPP.slice(2, 4)} ${DEFAULT_WHATSAPP.slice(4, 9)}-${DEFAULT_WHATSAPP.slice(9)}`, 60, blockY + 27);
+    doc.setFont("helvetica", "normal"); doc.setTextColor(100); doc.setFontSize(8);
+    doc.text("Daina Flow · dainaflow.com", 60, blockY + 34);
+    y = blockY + 48;
+  } catch {
+    // QR generation failed, skip silently
   }
 
   brandFooter(doc);

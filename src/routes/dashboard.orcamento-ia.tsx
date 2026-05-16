@@ -4,7 +4,7 @@ import { DashboardLayout } from "@/components/admin/DashboardLayout";
 import { supabase } from "@/integrations/supabase/client";
 import {
   Sparkles, Loader2, DollarSign, Clock, Users, AlertTriangle,
-  Lightbulb, Star, History, FileDown, Trash2,
+  Lightbulb, Star, History, FileDown, Trash2, Save,
 } from "lucide-react";
 import { toast } from "sonner";
 import { generateQuotePdf, type QuoteTier, type QuotePdfData } from "@/lib/quotePdf";
@@ -43,8 +43,20 @@ interface HistoryRow {
   client_profile: string | null;
   pricing_style: string | null;
   result: QuoteResult;
+  status: string | null;
+  notes: string | null;
   created_at: string;
 }
+
+const STATUSES = ["rascunho", "enviado", "aprovado", "faturado"] as const;
+type QuoteStatus = (typeof STATUSES)[number];
+
+const STATUS_STYLES: Record<QuoteStatus, string> = {
+  rascunho: "bg-secondary text-muted-foreground",
+  enviado: "bg-blue-500/15 text-blue-600 dark:text-blue-300",
+  aprovado: "bg-emerald-500/15 text-emerald-600 dark:text-emerald-300",
+  faturado: "bg-violet-500/15 text-violet-600 dark:text-violet-300",
+};
 
 function normalizeTiers(r: QuoteResult): QuoteTier[] {
   if (Array.isArray(r.tiers) && r.tiers.length) return r.tiers;
@@ -112,7 +124,12 @@ function Page() {
     } finally { setLoading(false); }
   }
 
-  function exportPdf(r: QuoteResult, f: Partial<QuoteForm>, createdAt?: string) {
+  async function exportPdf(
+    r: QuoteResult,
+    f: Partial<QuoteForm>,
+    createdAt?: string,
+    extra?: { status?: string | null; notes?: string | null },
+  ) {
     const tiers = normalizeTiers(r);
     if (!tiers.length) { toast.error("Sem faixas para exportar"); return; }
     const data: QuotePdfData = {
@@ -122,8 +139,10 @@ function Page() {
       analysis: r.analysis, pricing_strategy: r.pricing_strategy,
       recommended_tier: r.recommended_tier, red_flags: r.red_flags,
       tiers, created_at: createdAt,
+      status: extra?.status ?? undefined,
+      notes: extra?.notes ?? undefined,
     };
-    generateQuotePdf(data);
+    await generateQuotePdf(data);
   }
 
   async function deleteHistoryItem(id: string) {
@@ -132,6 +151,20 @@ function Page() {
     if (error) { toast.error(error.message); return; }
     toast.success("Removido");
     loadHistory();
+  }
+
+  async function updateStatus(id: string, status: QuoteStatus) {
+    const { error } = await supabase.from("ai_quotes").update({ status }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    setHistory((prev) => prev.map((h) => (h.id === id ? { ...h, status } : h)));
+    toast.success("Status atualizado");
+  }
+
+  async function saveNotes(id: string, notes: string) {
+    const { error } = await supabase.from("ai_quotes").update({ notes }).eq("id", id);
+    if (error) { toast.error(error.message); return; }
+    setHistory((prev) => prev.map((h) => (h.id === id ? { ...h, notes } : h)));
+    toast.success("Observações salvas");
   }
 
   function loadFromHistory(h: HistoryRow) {
@@ -182,30 +215,45 @@ function Page() {
                 const min = Math.min(...ts.map((t) => t.price_min));
                 const max = Math.max(...ts.map((t) => t.price_max || t.price_min));
                 return (
-                  <li key={h.id} className="flex flex-col gap-2 py-3 md:flex-row md:items-center md:gap-4">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(h.created_at).toLocaleString("pt-BR")} · {h.complexity} · {h.urgency}
-                      </p>
-                      <p className="truncate text-sm font-medium">{h.description}</p>
-                      <p className="text-xs text-muted-foreground">{fmt(min)} — {fmt(max)}</p>
+                  <li key={h.id} className="flex flex-col gap-3 py-4">
+                    <div className="flex flex-col gap-2 md:flex-row md:items-center md:gap-4">
+                      <div className="flex-1 min-w-0">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide ${STATUS_STYLES[(h.status as QuoteStatus) || "rascunho"]}`}>
+                            {h.status || "rascunho"}
+                          </span>
+                          <p className="text-xs text-muted-foreground">
+                            {new Date(h.created_at).toLocaleString("pt-BR")} · {h.complexity} · {h.urgency}
+                          </p>
+                        </div>
+                        <p className="mt-1 truncate text-sm font-medium">{h.description}</p>
+                        <p className="text-xs text-muted-foreground">{fmt(min)} — {fmt(max)}</p>
+                      </div>
+                      <div className="flex flex-wrap gap-2">
+                        <select
+                          value={(h.status as QuoteStatus) || "rascunho"}
+                          onChange={(e) => updateStatus(h.id, e.target.value as QuoteStatus)}
+                          className="h-8 rounded-lg border border-input bg-background px-2 text-xs font-semibold capitalize"
+                        >
+                          {STATUSES.map((s) => <option key={s} value={s}>{s}</option>)}
+                        </select>
+                        <button onClick={() => loadFromHistory(h)} className="rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">Abrir</button>
+                        <button onClick={() => exportPdf(h.result, {
+                          description: h.description,
+                          complexity: h.complexity ?? undefined,
+                          deadline: h.deadline ?? undefined,
+                          urgency: h.urgency ?? undefined,
+                          client_profile: h.client_profile ?? undefined,
+                          pricing_style: h.pricing_style ?? undefined,
+                        }, h.created_at, { status: h.status, notes: h.notes })} className="inline-flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">
+                          <FileDown className="h-3 w-3" /> PDF
+                        </button>
+                        <button onClick={() => deleteHistoryItem(h.id)} className="rounded-lg p-1.5 text-destructive hover:bg-destructive/10">
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
+                      </div>
                     </div>
-                    <div className="flex gap-2">
-                      <button onClick={() => loadFromHistory(h)} className="rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">Abrir</button>
-                      <button onClick={() => exportPdf(h.result, {
-                        description: h.description,
-                        complexity: h.complexity ?? undefined,
-                        deadline: h.deadline ?? undefined,
-                        urgency: h.urgency ?? undefined,
-                        client_profile: h.client_profile ?? undefined,
-                        pricing_style: h.pricing_style ?? undefined,
-                      }, h.created_at)} className="inline-flex items-center gap-1 rounded-lg bg-secondary px-3 py-1.5 text-xs font-semibold hover:bg-secondary/70">
-                        <FileDown className="h-3 w-3" /> PDF
-                      </button>
-                      <button onClick={() => deleteHistoryItem(h.id)} className="rounded-lg p-1.5 text-destructive hover:bg-destructive/10">
-                        <Trash2 className="h-3.5 w-3.5" />
-                      </button>
-                    </div>
+                    <NotesEditor initial={h.notes ?? ""} onSave={(v) => saveNotes(h.id, v)} />
                   </li>
                 );
               })}
@@ -345,6 +393,29 @@ function Page() {
           </div>
         </section>
       )}
+    </div>
+  );
+}
+
+function NotesEditor({ initial, onSave }: { initial: string; onSave: (v: string) => void }) {
+  const [val, setVal] = useState(initial);
+  const dirty = val !== initial;
+  return (
+    <div className="flex flex-col gap-2 rounded-xl bg-secondary/40 p-3 md:flex-row md:items-start">
+      <textarea
+        value={val}
+        onChange={(e) => setVal(e.target.value)}
+        rows={2}
+        placeholder="Observações do ciclo de vendas (ex.: enviado por e-mail, aguardando retorno, cliente pediu desconto…)"
+        className="flex-1 resize-none rounded-lg border border-input bg-background px-3 py-2 text-xs"
+      />
+      <button
+        onClick={() => onSave(val)}
+        disabled={!dirty}
+        className="inline-flex h-8 shrink-0 items-center gap-1 self-end rounded-lg bg-primary px-3 text-xs font-semibold text-primary-foreground disabled:opacity-50"
+      >
+        <Save className="h-3 w-3" /> Salvar
+      </button>
     </div>
   );
 }
