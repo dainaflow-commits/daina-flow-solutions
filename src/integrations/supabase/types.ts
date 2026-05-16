@@ -14,6 +14,44 @@ export type Database = {
   }
   public: {
     Tables: {
+      ai_quote_status_history: {
+        Row: {
+          changed_by: string | null
+          changed_by_email: string | null
+          created_at: string
+          from_status: string | null
+          id: string
+          quote_id: string
+          to_status: string
+        }
+        Insert: {
+          changed_by?: string | null
+          changed_by_email?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          quote_id: string
+          to_status: string
+        }
+        Update: {
+          changed_by?: string | null
+          changed_by_email?: string | null
+          created_at?: string
+          from_status?: string | null
+          id?: string
+          quote_id?: string
+          to_status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "ai_quote_status_history_quote_id_fkey"
+            columns: ["quote_id"]
+            isOneToOne: false
+            referencedRelation: "ai_quotes"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ai_quotes: {
         Row: {
           client_profile: string | null
