@@ -71,26 +71,8 @@ export function SocialProofSection() {
               </motion.span>
             ))}
           </div>
-
-          <div className="hidden h-12 w-px bg-border md:block" />
-
-          <div className="grid grid-cols-3 gap-4 md:gap-6">
-            {metrics.map(({ icon: Icon, value, label }, i) => (
-              <motion.div
-                key={label}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 + i * 0.08 }}
-                className="text-center"
-              >
-                <Icon className="mx-auto h-4 w-4 text-[color:var(--accent-violet)]" />
-                <p className="mt-1 font-display text-xl font-bold text-foreground">{value}</p>
-                <p className="text-[11px] leading-tight text-muted-foreground">{label}</p>
-              </motion.div>
-            ))}
-          </div>
         </div>
+
       </div>
     </section>
   );
