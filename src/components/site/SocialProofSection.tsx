@@ -1,19 +1,18 @@
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
 
-// Logos oficiais via simple-icons CDN. Slugs verificados em simpleicons.org.
-// Para marcas sem ícone público (Lovable, base44, Pipefy) usamos um monograma colorido.
+// Logos renderizadas como monograma colorido para evitar dependência de CDN externa.
 const tools = [
-  { name: "Excel", slug: "microsoftexcel", color: "217346" },
-  { name: "Power BI", slug: "powerbi", color: "F2C811" },
-  { name: "Notion", slug: "notion", color: "000000" },
-  { name: "Teams", slug: "microsoftteams", color: "6264A7" },
-  { name: "WhatsApp", slug: "whatsapp", color: "25D366" },
-  { name: "Make", slug: "make", color: "6D00CC" },
-  { name: "Airtable", slug: "airtable", color: "18BFFF" },
-  { name: "Pipefy", slug: null as string | null, color: "00B884", mono: "P" },
-  { name: "Lovable", slug: null as string | null, color: "FF5757", mono: "L" },
-  { name: "base44", slug: null as string | null, color: "0EA5E9", mono: "b" },
+  { name: "Excel", color: "217346", mono: "X" },
+  { name: "Power BI", color: "F2C811", mono: "P", fg: "#000" },
+  { name: "Notion", color: "000000", mono: "N" },
+  { name: "Teams", color: "6264A7", mono: "T" },
+  { name: "WhatsApp", color: "25D366", mono: "W" },
+  { name: "Make", color: "6D00CC", mono: "M" },
+  { name: "Airtable", color: "18BFFF", mono: "A" },
+  { name: "Pipefy", color: "00B884", mono: "P" },
+  { name: "Lovable", color: "FF5757", mono: "L" },
+  { name: "base44", color: "0EA5E9", mono: "b" },
 ];
 
 export function SocialProofSection() {
