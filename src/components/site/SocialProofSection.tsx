@@ -1,5 +1,5 @@
 import { motion } from "framer-motion";
-import { Sparkles, Clock, Users, TrendingUp } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 // Logos oficiais via simple-icons CDN. Slugs verificados em simpleicons.org.
 // Para marcas sem ícone público (Lovable, base44, Pipefy) usamos um monograma colorido.
@@ -16,12 +16,6 @@ const tools = [
   { name: "base44", slug: null as string | null, color: "0EA5E9", mono: "b" },
 ];
 
-const metrics = [
-  { icon: Clock, value: "+500h", label: "economizadas em automações" },
-  { icon: Users, value: "+30", label: "negócios atendidos" },
-  { icon: TrendingUp, value: "100%", label: "soluções sob medida" },
-];
-
 export function SocialProofSection() {
   return (
     <section className="border-y border-border/60 bg-secondary/30 py-12">
@@ -36,8 +30,8 @@ export function SocialProofSection() {
           Ferramentas que domino · Resultados reais
         </motion.p>
 
-        <div className="grid items-center gap-8 md:grid-cols-[1.4fr_auto_1fr]">
-          <div className="flex flex-wrap items-center justify-center gap-2.5 md:justify-end">
+        <div className="flex justify-center">
+          <div className="flex flex-wrap items-center justify-center gap-2.5">
             {tools.map((t, i) => (
               <motion.span
                 key={t.name}
@@ -77,26 +71,8 @@ export function SocialProofSection() {
               </motion.span>
             ))}
           </div>
-
-          <div className="hidden h-12 w-px bg-border md:block" />
-
-          <div className="grid grid-cols-3 gap-4 md:gap-6">
-            {metrics.map(({ icon: Icon, value, label }, i) => (
-              <motion.div
-                key={label}
-                initial={{ opacity: 0, y: 12 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: 0.2 + i * 0.08 }}
-                className="text-center"
-              >
-                <Icon className="mx-auto h-4 w-4 text-[color:var(--accent-violet)]" />
-                <p className="mt-1 font-display text-xl font-bold text-foreground">{value}</p>
-                <p className="text-[11px] leading-tight text-muted-foreground">{label}</p>
-              </motion.div>
-            ))}
-          </div>
         </div>
+
       </div>
     </section>
   );
