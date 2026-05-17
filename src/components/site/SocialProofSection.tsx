@@ -1,4 +1,5 @@
 import { motion } from "framer-motion";
+import type { ReactElement } from "react";
 import { Sparkles } from "lucide-react";
 import { siNotion, siWhatsapp, siMake, siAirtable } from "simple-icons";
 
@@ -7,7 +8,7 @@ type SimpleIcon = { hex: string; path: string; title: string };
 // Hybrid: official SVGs from simple-icons when available; hand-built brand SVGs otherwise.
 type Tool =
   | { name: string; kind: "si"; icon: SimpleIcon; bg?: string }
-  | { name: string; kind: "custom"; render: () => JSX.Element };
+  | { name: string; kind: "custom"; render: () => ReactElement };
 
 const SI = (icon: SimpleIcon, bg?: string) => ({ kind: "si" as const, icon, bg });
 
