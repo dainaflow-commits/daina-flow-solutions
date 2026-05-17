@@ -41,31 +41,13 @@ export function SocialProofSection() {
                 className="inline-flex items-center gap-1.5 rounded-full border border-border bg-card px-3 py-1.5 text-xs font-semibold text-foreground/80 shadow-sm hover:border-primary/40 hover:shadow-md transition-smooth"
                 title={t.name}
               >
-                {t.slug ? (
-                  <img
-                    src={`https://cdn.simpleicons.org/${t.slug}/${t.color}`}
-                    alt={t.name}
-                    className="h-4 w-4 object-contain"
-                    loading="lazy"
-                    onError={(e) => {
-                      const img = e.currentTarget;
-                      const fallback = document.createElement("span");
-                      fallback.className =
-                        "grid h-4 w-4 place-items-center rounded-sm text-[8px] font-black text-white";
-                      fallback.style.background = `#${t.color}`;
-                      fallback.textContent = t.name.charAt(0).toLowerCase();
-                      img.replaceWith(fallback);
-                    }}
-                  />
-                ) : (
-                  <span
-                    className="grid h-4 w-4 place-items-center rounded-sm text-[8px] font-black text-white"
-                    style={{ background: `#${t.color}` }}
-                    aria-hidden
-                  >
-                    {(t as { mono?: string }).mono ?? t.name.charAt(0).toLowerCase()}
-                  </span>
-                )}
+                <span
+                  className="grid h-4 w-4 place-items-center rounded-sm text-[9px] font-black"
+                  style={{ background: `#${t.color}`, color: t.fg ?? "#fff" }}
+                  aria-hidden
+                >
+                  {t.mono}
+                </span>
                 {t.name}
               </motion.span>
             ))}
