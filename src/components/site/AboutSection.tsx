@@ -1,49 +1,16 @@
-import heroImg from "@/assets/larissa.png";
-import { useEffect, useState } from "react";
-import { supabase } from "@/integrations/supabase/client";
 import { MapPin, GraduationCap, Briefcase } from "lucide-react";
 import { motion } from "framer-motion";
 
 export function AboutSection() {
-  const [photo, setPhoto] = useState<string>(heroImg);
-
-  useEffect(() => {
-    supabase.from("site_settings").select("value").eq("key", "about_photo_url").maybeSingle()
-      .then(({ data }) => { if (data?.value) setPhoto(data.value); });
-  }, []);
-
   return (
     <section id="sobre" className="bg-background py-20 md:py-28">
-      <div className="container mx-auto grid items-center gap-12 px-4 md:grid-cols-[1fr_1.2fr]">
-        <motion.div
-          className="relative mx-auto w-full max-w-sm"
-          initial={{ opacity: 0, x: -40 }}
-          whileInView={{ opacity: 1, x: 0 }}
-          viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: "easeOut" }}
-        >
-          <motion.div
-            className="absolute -inset-4 -z-10 rounded-[2rem] bg-gradient-brand-soft"
-            animate={{ rotate: [0, 3, -3, 0] }}
-            transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
-          />
-          <motion.img
-            src={photo}
-            alt="Larissa Daina"
-            loading="lazy"
-            width={800} height={1000}
-            className="aspect-[4/5] w-full rounded-[1.75rem] border border-border object-cover shadow-card"
-            whileHover={{ scale: 1.03 }}
-            transition={{ duration: 0.4 }}
-          />
-        </motion.div>
-
+      <div className="container mx-auto max-w-3xl px-4 text-center">
         <motion.div
           className="space-y-6"
-          initial={{ opacity: 0, x: 40 }}
-          whileInView={{ opacity: 1, x: 0 }}
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-80px" }}
-          transition={{ duration: 0.7, ease: "easeOut", delay: 0.1 }}
+          transition={{ duration: 0.7, ease: "easeOut" }}
         >
           <span className="inline-block rounded-full bg-secondary px-3 py-1 text-xs font-semibold uppercase tracking-wider text-secondary-foreground">
             Sobre mim
