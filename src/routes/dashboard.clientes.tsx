@@ -51,16 +51,16 @@ function Clients() {
     }
     setSaving(true);
     const { data: userRes } = await supabase.auth.getUser();
-    const uid = userRes.user?.id ?? null;
-    const payload = {
+    const uid = userRes.user?.id;
+    if (!uid) { setSaving(false); toast.error("Sessão expirada"); return; }
+    const { error } = await supabase.from("clients").insert([{
       full_name: parsed.data.full_name,
       email: parsed.data.email,
       phone: parsed.data.phone || null,
       company: parsed.data.company || null,
       notes: parsed.data.notes || null,
       user_id: uid,
-    };
-    const { error } = await supabase.from("clients").insert(payload);
+    }]);
     setSaving(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Cliente adicionado");
