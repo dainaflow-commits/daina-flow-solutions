@@ -16,7 +16,7 @@ Deno.serve(async (req) => {
   try {
     const p = (await req.json()) as Payload;
     const RESEND_API_KEY = Deno.env.get("Resend") ?? Deno.env.get("RESEND_API_KEY");
-    const ADMIN_EMAIL = "larissadaina@gmail.com";
+    const ADMIN_EMAIL = "dainaflow@gmail.com";
 
     const html = `
       <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:24px;color:#0f172a">

@@ -4,7 +4,7 @@ const corsHeaders = {
   "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
-const ADMIN_EMAIL = "larissadaina@gmail.com";
+const ADMIN_EMAIL = "dainaflow@gmail.com";
 const FROM_EMAIL = "Daina Flow <onboarding@resend.dev>";
 const APP_URL = "https://daina-flow-solutions.lovable.app";
 
