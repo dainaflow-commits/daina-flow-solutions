@@ -2,9 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/admin/DashboardLayout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Plus, Trash2, Save, ArrowLeft, FileDown, Send, Sparkles } from "lucide-react";
+import { Loader2, Plus, Trash2, Save, ArrowLeft, FileDown, Send, Sparkles, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { generateProposalPdf } from "@/lib/documentPdf";
+import { downloadEditableDoc } from "@/lib/editableDoc";
 import { AIDocumentWizard, type BriefingResult } from "@/components/admin/AIDocumentWizard";
 
 export const Route = createFileRoute("/dashboard/propostas/$id")({
@@ -88,6 +89,23 @@ function EditProposal() {
     });
   }
 
+  function downloadDoc() {
+    if (!p) return;
+    downloadEditableDoc({
+      title: p.title,
+      subtitle: "Proposta Comercial · Daina Flow",
+      meta: [
+        { label: "Cliente", value: p.clients?.full_name ?? "—" },
+        ...(p.valid_until ? [{ label: "Validade", value: new Date(p.valid_until).toLocaleDateString("pt-BR") }] : []),
+        { label: "Emissão", value: new Date().toLocaleDateString("pt-BR") },
+      ],
+      intro: p.intro,
+      body_markdown: p.body_markdown,
+      items: items.map((i) => ({ description: i.description, quantity: i.quantity, unit_price: i.unit_price })),
+      total,
+    }, `proposta-${p.title.replace(/\s+/g, "-").toLowerCase().slice(0, 60)}`);
+  }
+
   function applyAI(r: BriefingResult) {
     if (!p) return;
     setP({ ...p, title: r.title || p.title, intro: r.intro ?? p.intro, body_markdown: r.body_markdown ?? p.body_markdown });
@@ -119,6 +137,9 @@ function EditProposal() {
           </button>
           <button onClick={downloadPdf} className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold">
             <FileDown className="h-4 w-4" /> PDF
+          </button>
+          <button onClick={downloadDoc} className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold" title="Baixar arquivo editável (.doc) — abre no Word e Google Docs">
+            <FileText className="h-4 w-4" /> Word
           </button>
           <button onClick={save} disabled={saving} className="inline-flex h-10 items-center gap-2 rounded-xl bg-secondary px-4 text-sm font-semibold disabled:opacity-60">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Salvar

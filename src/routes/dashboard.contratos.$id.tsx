@@ -2,9 +2,10 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/admin/DashboardLayout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Save, ArrowLeft, FileDown, Sparkles, Send, Copy } from "lucide-react";
+import { Loader2, Save, ArrowLeft, FileDown, Sparkles, Send, Copy, FileText } from "lucide-react";
 import { toast } from "sonner";
 import { generateContractPdf } from "@/lib/documentPdf";
+import { downloadEditableDoc } from "@/lib/editableDoc";
 import { AIDocumentWizard, type BriefingResult } from "@/components/admin/AIDocumentWizard";
 
 export const Route = createFileRoute("/dashboard/contratos/$id")({
@@ -53,6 +54,21 @@ function EditContract() {
       client_email: c.clients?.email,
       signature_data: c.signature_data, signer_name: c.signer_name, signed_at: c.signed_at,
     });
+  }
+
+  function downloadDoc() {
+    if (!c) return;
+    downloadEditableDoc({
+      title: c.title,
+      subtitle: "Contrato de Prestação de Serviços · Daina Flow",
+      meta: [
+        { label: "Contratante", value: c.clients?.full_name ?? "—" },
+        ...(c.clients?.email ? [{ label: "E-mail", value: c.clients.email }] : []),
+        { label: "Valor", value: new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(c.total || 0) },
+        { label: "Emissão", value: new Date().toLocaleDateString("pt-BR") },
+      ],
+      body_markdown: c.body,
+    }, `contrato-${c.title.replace(/\s+/g, "-").toLowerCase().slice(0, 60)}`);
   }
 
   function applyAI(r: BriefingResult) {
@@ -128,6 +144,9 @@ function EditContract() {
           </button>
           <button onClick={downloadPdf} className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold">
             <FileDown className="h-4 w-4" /> PDF
+          </button>
+          <button onClick={downloadDoc} className="inline-flex h-10 items-center gap-2 rounded-xl border border-border bg-card px-4 text-sm font-semibold" title="Baixar arquivo editável (.doc) — abre no Word e Google Docs">
+            <FileText className="h-4 w-4" /> Word
           </button>
           <button onClick={save} disabled={saving} className="inline-flex h-10 items-center gap-2 rounded-xl bg-secondary px-4 text-sm font-semibold disabled:opacity-60">
             {saving ? <Loader2 className="h-4 w-4 animate-spin" /> : <Save className="h-4 w-4" />} Salvar
