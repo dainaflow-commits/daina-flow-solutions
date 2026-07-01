@@ -2,8 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/admin/DashboardLayout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Plus, FileText, Trash2, Send, Pencil } from "lucide-react";
+import { Loader2, Plus, FileText, Trash2, Send, Pencil, Sparkles } from "lucide-react";
 import { toast } from "sonner";
+import { AIDocumentWizard, type BriefingResult } from "@/components/admin/AIDocumentWizard";
 
 export const Route = createFileRoute("/dashboard/propostas")({
   head: () => ({ meta: [{ title: "Propostas — Admin" }] }),
@@ -16,7 +17,7 @@ interface Proposal {
   clients?: { full_name: string } | null;
 }
 
-interface Client { id: string; full_name: string; }
+interface Client { id: string; full_name: string; email?: string; company?: string | null; }
 
 const STATUS_LABEL: Record<string, string> = {
   rascunho: "Rascunho", enviada: "Enviada", aceita: "Aceita", recusada: "Recusada", expirada: "Expirada",
@@ -34,13 +35,15 @@ function AdminProposals() {
   const [clients, setClients] = useState<Client[]>([]);
   const [loading, setLoading] = useState(true);
   const [creating, setCreating] = useState(false);
+  const [showAI, setShowAI] = useState(false);
   const [newTitle, setNewTitle] = useState("");
   const [newClient, setNewClient] = useState("");
+  const selectedClient = clients.find((c) => c.id === newClient) ?? null;
 
   async function load() {
     const [{ data: pr }, { data: cl }] = await Promise.all([
       supabase.from("proposals").select("*, clients(full_name)").order("created_at", { ascending: false }),
-      supabase.from("clients").select("id, full_name").order("full_name"),
+      supabase.from("clients").select("id, full_name, email, company").order("full_name"),
     ]);
     setList((pr as Proposal[]) ?? []);
     setClients((cl as Client[]) ?? []);
@@ -59,6 +62,50 @@ function AdminProposals() {
     if (error) { toast.error(error.message); return; }
     toast.success("Proposta criada");
     setNewTitle(""); setNewClient("");
+    window.location.href = `/dashboard/propostas/${data!.id}`;
+  }
+
+  function openGuidedProposal() {
+    if (!newClient || !selectedClient) { toast.error("Selecione um cliente para gerar a proposta."); return; }
+    setShowAI(true);
+  }
+
+  async function createFromAI(result: BriefingResult) {
+    if (!selectedClient) throw new Error("Selecione um cliente");
+    const generatedItems = result.items?.length
+      ? result.items
+      : result.total > 0
+        ? [{ description: "Projeto completo conforme escopo proposto", quantity: 1, unit_price: result.total }]
+        : [];
+    const total = generatedItems.reduce((sum, item) => sum + Number(item.quantity || 0) * Number(item.unit_price || 0), 0) || Number(result.total || 0);
+    const validUntil = result.valid_until_days
+      ? (() => { const d = new Date(); d.setDate(d.getDate() + result.valid_until_days!); return d.toISOString().slice(0, 10); })()
+      : null;
+
+    const { data, error } = await supabase
+      .from("proposals")
+      .insert({
+        title: result.title || newTitle.trim() || `Proposta Comercial — ${selectedClient.full_name}`,
+        client_id: selectedClient.id,
+        intro: result.intro ?? null,
+        body_markdown: result.body_markdown ?? null,
+        valid_until: validUntil,
+        total,
+        status: "rascunho",
+      })
+      .select("id")
+      .single();
+    if (error) throw new Error(error.message);
+    if (generatedItems.length > 0) {
+      const { error: itemError } = await supabase.from("proposal_items").insert(generatedItems.map((item, index) => ({
+        proposal_id: data!.id,
+        description: item.description,
+        quantity: Number(item.quantity || 1),
+        unit_price: Number(item.unit_price || 0),
+        position: index,
+      })));
+      if (itemError) throw new Error(itemError.message);
+    }
     window.location.href = `/dashboard/propostas/${data!.id}`;
   }
 
@@ -86,14 +133,17 @@ function AdminProposals() {
 
       <section className="rounded-2xl border border-border bg-card p-6">
         <h2 className="font-display text-lg font-bold">Nova proposta</h2>
-        <div className="mt-4 grid gap-3 md:grid-cols-[1fr,1fr,auto]">
+        <div className="mt-4 grid gap-3 md:grid-cols-[1fr,1fr,auto,auto]">
           <select value={newClient} onChange={(e) => setNewClient(e.target.value)} className="h-11 rounded-xl border border-input bg-background px-3 text-sm">
             <option value="">Selecione o cliente…</option>
             {clients.map((c) => <option key={c.id} value={c.id}>{c.full_name}</option>)}
           </select>
-          <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Título da proposta" className="h-11 rounded-xl border border-input bg-background px-3 text-sm" />
-          <button onClick={create} disabled={creating} className="inline-flex h-11 items-center gap-2 rounded-xl bg-gradient-brand px-5 text-sm font-semibold text-primary-foreground shadow-elegant disabled:opacity-60">
-            {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />} Criar
+          <input value={newTitle} onChange={(e) => setNewTitle(e.target.value)} placeholder="Título da proposta (opcional para IA)" className="h-11 rounded-xl border border-input bg-background px-3 text-sm" />
+          <button onClick={openGuidedProposal} disabled={creating} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl bg-gradient-brand px-5 text-sm font-semibold text-primary-foreground shadow-elegant disabled:opacity-60">
+            <Sparkles className="h-4 w-4" /> Criar estruturada
+          </button>
+          <button onClick={create} disabled={creating} className="inline-flex h-11 items-center justify-center gap-2 rounded-xl border border-border bg-card px-5 text-sm font-semibold disabled:opacity-60">
+            {creating ? <Loader2 className="h-4 w-4 animate-spin" /> : <Plus className="h-4 w-4" />} Em branco
           </button>
         </div>
       </section>
@@ -131,6 +181,18 @@ function AdminProposals() {
           </ul>
         )}
       </section>
+
+      {showAI && selectedClient && (
+        <AIDocumentWizard
+          type="proposal"
+          clientName={selectedClient.full_name}
+          clientEmail={selectedClient.email}
+          clientCompany={selectedClient.company ?? undefined}
+          initialTitle={newTitle}
+          onClose={() => setShowAI(false)}
+          onGenerated={createFromAI}
+        />
+      )}
     </div>
   );
 }

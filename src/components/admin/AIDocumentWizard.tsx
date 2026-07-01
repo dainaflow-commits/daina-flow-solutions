@@ -8,6 +8,8 @@ export interface BriefingResult {
   intro?: string;
   body_markdown?: string;
   total: number;
+  pricing_note?: string;
+  suggested_price_range?: string;
   valid_until_days?: number;
   payment_terms?: string;
   items?: { description: string; quantity: number; unit_price: number }[];
@@ -18,31 +20,39 @@ interface Props {
   clientName: string;
   clientEmail?: string;
   clientCompany?: string;
+  initialTitle?: string;
   onClose: () => void;
-  onGenerated: (data: BriefingResult) => void;
+  onGenerated: (data: BriefingResult) => void | Promise<void>;
 }
 
-export function AIDocumentWizard({ type, clientName, clientEmail, clientCompany, onClose, onGenerated }: Props) {
+export function AIDocumentWizard({ type, clientName, clientEmail, clientCompany, initialTitle, onClose, onGenerated }: Props) {
   const [step, setStep] = useState(0);
   const [loading, setLoading] = useState(false);
   const [form, setForm] = useState({
+    title_hint: initialTitle ?? "",
     service_focus: "",
+    client_goal: "",
+    current_challenge: "",
     scope_summary: "",
+    client_profile: "Pequena/média empresa",
+    complexity: "intermediária",
+    urgency: "normal",
     deadline: "",
     total_value: "",
+    pricing_style: "equilibrado",
     payment_terms: "50% no início, 50% na entrega",
     extra_notes: "",
   });
 
   const isProposal = type === "proposal";
-  const total = 4;
+  const total = isProposal ? 5 : 4;
 
   function next() { setStep((s) => Math.min(s + 1, total - 1)); }
   function prev() { setStep((s) => Math.max(s - 1, 0)); }
 
   async function generate() {
-    if (!form.service_focus || !form.scope_summary) {
-      toast.error("Preencha o foco do serviço e o escopo");
+    if (!form.service_focus.trim() || !form.scope_summary.trim() || (isProposal && !form.client_goal.trim())) {
+      toast.error(isProposal ? "Preencha a ideia, o objetivo do cliente e o escopo" : "Preencha o objeto do contrato e o escopo");
       return;
     }
     setLoading(true);
@@ -58,7 +68,7 @@ export function AIDocumentWizard({ type, clientName, clientEmail, clientCompany,
       });
       if (error) throw error;
       if (data?.error) throw new Error(data.error);
-      onGenerated(data as BriefingResult);
+      await onGenerated(data as BriefingResult);
       toast.success(isProposal ? "Proposta gerada!" : "Contrato gerado!");
       onClose();
     } catch (e: any) {
@@ -97,63 +107,122 @@ export function AIDocumentWizard({ type, clientName, clientEmail, clientCompany,
 
           {step === 0 && (
             <div className="space-y-3">
-              <Label>Qual o foco do {isProposal ? "serviço a ofertar" : "objeto do contrato"}?</Label>
+              {isProposal && (
+                <>
+                  <Label>Título ou nome da oportunidade</Label>
+                  <input
+                    value={form.title_hint}
+                    onChange={(e) => setForm({ ...form, title_hint: e.target.value })}
+                    placeholder="Ex.: Floras Coffee — proposta de automação comercial"
+                    className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
+                    autoFocus
+                  />
+                </>
+              )}
+              <Label>{isProposal ? "Qual é a ideia ou serviço que você quer propor?" : "Qual é o objeto do contrato?"}</Label>
               <input
                 value={form.service_focus}
                 onChange={(e) => setForm({ ...form, service_focus: e.target.value })}
-                placeholder="Ex.: Implementação de dashboard de People Analytics"
+                placeholder="Ex.: Dashboard de indicadores, automação de planilhas, organização de processos"
                 className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
-                autoFocus
               />
-              <p className="text-xs text-muted-foreground">Seja específico — quanto melhor o briefing, melhor o documento.</p>
+              {isProposal && (
+                <>
+                  <Label>Qual resultado o cliente quer alcançar?</Label>
+                  <textarea
+                    rows={3}
+                    value={form.client_goal}
+                    onChange={(e) => setForm({ ...form, client_goal: e.target.value })}
+                    placeholder="Ex.: Reduzir retrabalho, acompanhar vendas por loja, melhorar tomada de decisão"
+                    className="w-full rounded-xl border border-input bg-background p-3 text-sm"
+                  />
+                </>
+              )}
             </div>
           )}
 
           {step === 1 && (
             <div className="space-y-3">
-              <Label>Escopo / o que será entregue</Label>
+              <Label>{isProposal ? "Qual problema ou oportunidade existe hoje?" : "Escopo / o que será entregue"}</Label>
               <textarea
                 rows={6}
+                value={isProposal ? form.current_challenge : form.scope_summary}
+                onChange={(e) => setForm(isProposal ? { ...form, current_challenge: e.target.value } : { ...form, scope_summary: e.target.value })}
+                placeholder={isProposal ? "Ex.: informações espalhadas, controle manual, dificuldade de enxergar gargalos e prioridades" : "Ex.: Diagnóstico inicial, modelagem de dados, dashboards e treinamento"}
+                className="w-full rounded-xl border border-input bg-background p-3 text-sm"
+              />
+              {isProposal && (
+                <div className="grid gap-3 md:grid-cols-2">
+                  <div className="space-y-2">
+                    <Label>Perfil do cliente</Label>
+                    <select value={form.client_profile} onChange={(e) => setForm({ ...form, client_profile: e.target.value })} className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm">
+                      <option>Micro/pequena empresa</option>
+                      <option>Pequena/média empresa</option>
+                      <option>Empresa em crescimento</option>
+                      <option>Cliente premium/estratégico</option>
+                    </select>
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Complexidade</Label>
+                    <select value={form.complexity} onChange={(e) => setForm({ ...form, complexity: e.target.value })} className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm">
+                      <option>simples</option>
+                      <option>intermediária</option>
+                      <option>alta</option>
+                      <option>estratégica</option>
+                    </select>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {step === 2 && (
+            <div className="space-y-3">
+              <Label>{isProposal ? "O que deve entrar na proposta?" : "Prazo, valor e condições"}</Label>
+              <textarea
+                rows={7}
                 value={form.scope_summary}
                 onChange={(e) => setForm({ ...form, scope_summary: e.target.value })}
-                placeholder="Ex.: Diagnóstico inicial, modelagem de dados (turnover, absenteísmo), 3 dashboards no Looker Studio, treinamento de 4h."
+                placeholder="Liste entregáveis, etapas, reuniões, dashboards, automações, treinamento, suporte, limites do escopo etc."
                 className="w-full rounded-xl border border-input bg-background p-3 text-sm"
               />
             </div>
           )}
 
-          {step === 2 && (
+          {step === 3 && isProposal && (
             <div className="grid gap-3 md:grid-cols-2">
               <div className="space-y-2">
-                <Label>Prazo</Label>
-                <input
-                  value={form.deadline}
-                  onChange={(e) => setForm({ ...form, deadline: e.target.value })}
-                  placeholder="Ex.: 30 dias"
-                  className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
-                />
+                <Label>Prazo desejado</Label>
+                <input value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })} placeholder="Ex.: 30 dias" className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm" />
               </div>
               <div className="space-y-2">
-                <Label>Valor</Label>
-                <input
-                  value={form.total_value}
-                  onChange={(e) => setForm({ ...form, total_value: e.target.value })}
-                  placeholder="Ex.: R$ 4500 ou A partir de R$ 2000"
-                  className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
-                />
+                <Label>Urgência</Label>
+                <select value={form.urgency} onChange={(e) => setForm({ ...form, urgency: e.target.value })} className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm">
+                  <option>normal</option>
+                  <option>urgente</option>
+                  <option>muito urgente</option>
+                </select>
+              </div>
+              <div className="space-y-2">
+                <Label>Valor conhecido (opcional)</Label>
+                <input value={form.total_value} onChange={(e) => setForm({ ...form, total_value: e.target.value })} placeholder="Deixe em branco para a IA sugerir" className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm" />
+              </div>
+              <div className="space-y-2">
+                <Label>Estratégia de preço</Label>
+                <select value={form.pricing_style} onChange={(e) => setForm({ ...form, pricing_style: e.target.value })} className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm">
+                  <option value="conservador">Conservador</option>
+                  <option value="equilibrado">Equilibrado</option>
+                  <option value="premium">Premium</option>
+                </select>
               </div>
               <div className="space-y-2 md:col-span-2">
                 <Label>Condições de pagamento</Label>
-                <input
-                  value={form.payment_terms}
-                  onChange={(e) => setForm({ ...form, payment_terms: e.target.value })}
-                  className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm"
-                />
+                <input value={form.payment_terms} onChange={(e) => setForm({ ...form, payment_terms: e.target.value })} className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm" />
               </div>
             </div>
           )}
 
-          {step === 3 && (
+          {step === (isProposal ? 4 : 3) && (
             <div className="space-y-3">
               <Label>Observações extras (opcional)</Label>
               <textarea
@@ -164,7 +233,7 @@ export function AIDocumentWizard({ type, clientName, clientEmail, clientCompany,
                 className="w-full rounded-xl border border-input bg-background p-3 text-sm"
               />
               <div className="rounded-xl bg-secondary/50 p-4 text-xs text-muted-foreground">
-                Pronto! Clique em <strong>Gerar com IA</strong>. Você poderá editar tudo depois.
+                A IA vai montar uma proposta completa, com resumo executivo, escopo, cronograma, investimento sugerido e próximos passos.
               </div>
             </div>
           )}
