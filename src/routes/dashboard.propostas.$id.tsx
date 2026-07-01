@@ -89,6 +89,23 @@ function EditProposal() {
     });
   }
 
+  function downloadDoc() {
+    if (!p) return;
+    downloadEditableDoc({
+      title: p.title,
+      subtitle: "Proposta Comercial · Daina Flow",
+      meta: [
+        { label: "Cliente", value: p.clients?.full_name ?? "—" },
+        ...(p.valid_until ? [{ label: "Validade", value: new Date(p.valid_until).toLocaleDateString("pt-BR") }] : []),
+        { label: "Emissão", value: new Date().toLocaleDateString("pt-BR") },
+      ],
+      intro: p.intro,
+      body_markdown: p.body_markdown,
+      items: items.map((i) => ({ description: i.description, quantity: i.quantity, unit_price: i.unit_price })),
+      total,
+    }, `proposta-${p.title.replace(/\s+/g, "-").toLowerCase().slice(0, 60)}`);
+  }
+
   function applyAI(r: BriefingResult) {
     if (!p) return;
     setP({ ...p, title: r.title || p.title, intro: r.intro ?? p.intro, body_markdown: r.body_markdown ?? p.body_markdown });
