@@ -56,6 +56,21 @@ function EditContract() {
     });
   }
 
+  function downloadDoc() {
+    if (!c) return;
+    downloadEditableDoc({
+      title: c.title,
+      subtitle: "Contrato de Prestação de Serviços · Daina Flow",
+      meta: [
+        { label: "Contratante", value: c.clients?.full_name ?? "—" },
+        ...(c.clients?.email ? [{ label: "E-mail", value: c.clients.email }] : []),
+        { label: "Valor", value: new Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(c.total || 0) },
+        { label: "Emissão", value: new Date().toLocaleDateString("pt-BR") },
+      ],
+      body_markdown: c.body,
+    }, `contrato-${c.title.replace(/\s+/g, "-").toLowerCase().slice(0, 60)}`);
+  }
+
   function applyAI(r: BriefingResult) {
     if (!c) return;
     setC({ ...c, title: r.title || c.title, body: r.body_markdown ?? c.body, total: r.total ?? c.total });
