@@ -42,7 +42,6 @@ import { Route as DashboardClientesRouteImport } from './routes/dashboard.client
 import { Route as DashboardCalendarioRouteImport } from './routes/dashboard.calendario'
 import { Route as DashboardAuditoriaRouteImport } from './routes/dashboard.auditoria'
 import { Route as DashboardAnalyticsRouteImport } from './routes/dashboard.analytics'
-import { Route as ApiBootstrapAdminRouteImport } from './routes/api.bootstrap-admin'
 import { Route as PortalPropostasIdRouteImport } from './routes/portal.propostas.$id'
 import { Route as PortalProjetosProjectIdRouteImport } from './routes/portal.projetos.$projectId'
 import { Route as DashboardPropostasIdRouteImport } from './routes/dashboard.propostas.$id'
@@ -214,11 +213,6 @@ const DashboardAnalyticsRoute = DashboardAnalyticsRouteImport.update({
   path: '/dashboard/analytics',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiBootstrapAdminRoute = ApiBootstrapAdminRouteImport.update({
-  id: '/api/bootstrap-admin',
-  path: '/api/bootstrap-admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const PortalPropostasIdRoute = PortalPropostasIdRouteImport.update({
   id: '/$id',
   path: '/$id',
@@ -250,7 +244,6 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/servicos': typeof ServicosRouteWithChildren
-  '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/auditoria': typeof DashboardAuditoriaRoute
   '/dashboard/calendario': typeof DashboardCalendarioRoute
@@ -291,7 +284,6 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/servicos': typeof ServicosRouteWithChildren
-  '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/auditoria': typeof DashboardAuditoriaRoute
   '/dashboard/calendario': typeof DashboardCalendarioRoute
@@ -333,7 +325,6 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/portfolio': typeof PortfolioRoute
   '/servicos': typeof ServicosRouteWithChildren
-  '/api/bootstrap-admin': typeof ApiBootstrapAdminRoute
   '/dashboard/analytics': typeof DashboardAnalyticsRoute
   '/dashboard/auditoria': typeof DashboardAuditoriaRoute
   '/dashboard/calendario': typeof DashboardCalendarioRoute
@@ -376,7 +367,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/portfolio'
     | '/servicos'
-    | '/api/bootstrap-admin'
     | '/dashboard/analytics'
     | '/dashboard/auditoria'
     | '/dashboard/calendario'
@@ -417,7 +407,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/portfolio'
     | '/servicos'
-    | '/api/bootstrap-admin'
     | '/dashboard/analytics'
     | '/dashboard/auditoria'
     | '/dashboard/calendario'
@@ -458,7 +447,6 @@ export interface FileRouteTypes {
     | '/login'
     | '/portfolio'
     | '/servicos'
-    | '/api/bootstrap-admin'
     | '/dashboard/analytics'
     | '/dashboard/auditoria'
     | '/dashboard/calendario'
@@ -500,7 +488,6 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   PortfolioRoute: typeof PortfolioRoute
   ServicosRoute: typeof ServicosRouteWithChildren
-  ApiBootstrapAdminRoute: typeof ApiBootstrapAdminRoute
   DashboardAnalyticsRoute: typeof DashboardAnalyticsRoute
   DashboardAuditoriaRoute: typeof DashboardAuditoriaRoute
   DashboardCalendarioRoute: typeof DashboardCalendarioRoute
@@ -765,13 +752,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardAnalyticsRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/bootstrap-admin': {
-      id: '/api/bootstrap-admin'
-      path: '/api/bootstrap-admin'
-      fullPath: '/api/bootstrap-admin'
-      preLoaderRoute: typeof ApiBootstrapAdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/portal/propostas/$id': {
       id: '/portal/propostas/$id'
       path: '/$id'
@@ -873,7 +853,6 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   PortfolioRoute: PortfolioRoute,
   ServicosRoute: ServicosRouteWithChildren,
-  ApiBootstrapAdminRoute: ApiBootstrapAdminRoute,
   DashboardAnalyticsRoute: DashboardAnalyticsRoute,
   DashboardAuditoriaRoute: DashboardAuditoriaRoute,
   DashboardCalendarioRoute: DashboardCalendarioRoute,
@@ -907,3 +886,12 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { createStart } from '@tanstack/react-start'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+  }
+}

@@ -1,8 +1,9 @@
-// Gera propostas/contratos via Lovable AI Gateway (não-streaming, retorna JSON estruturado)
+// Gera propostas/contratos via Lovable AI Gateway, com acesso restrito ao perfil admin.
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2.45.0";
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers":
-    "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
 };
 
 interface Briefing {
@@ -10,102 +11,150 @@ interface Briefing {
   client_name: string;
   client_company?: string;
   client_email?: string;
-  service_focus: string;          // ex.: "Implementação de People Analytics"
-  scope_summary: string;          // o que será entregue (texto livre)
-  deadline?: string;              // ex.: "30 dias"
-  total_value?: string;           // ex.: "R$ 4500" ou "A partir de R$ 2000"
-  payment_terms?: string;         // ex.: "50% início, 50% entrega"
+  title_hint?: string;
+  service_focus: string;
+  client_goal?: string;
+  current_challenge?: string;
+  scope_summary: string;
+  client_profile?: string;
+  complexity?: string;
+  urgency?: string;
+  pricing_style?: string;
+  deadline?: string;
+  total_value?: string;
+  payment_terms?: string;
   extra_notes?: string;
+}
+
+function json(body: unknown, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { ...corsHeaders, "Content-Type": "application/json" },
+  });
+}
+
+function extractJson(content: string) {
+  const clean = content.trim().replace(/^```json\s*/i, "").replace(/^```\s*/i, "").replace(/```$/i, "").trim();
+  const start = clean.indexOf("{");
+  const end = clean.lastIndexOf("}");
+  if (start >= 0 && end > start) return JSON.parse(clean.slice(start, end + 1));
+  return JSON.parse(clean);
+}
+
+async function assertAdmin(req: Request) {
+  const authHeader = req.headers.get("Authorization");
+  if (!authHeader) return { ok: false, response: json({ error: "Sessão obrigatória" }, 401) };
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const anonKey = Deno.env.get("SUPABASE_ANON_KEY");
+  if (!supabaseUrl || !anonKey) return { ok: false, response: json({ error: "Configuração de autenticação indisponível" }, 500) };
+
+  const sb = createClient(supabaseUrl, anonKey, { global: { headers: { Authorization: authHeader } } });
+  const { data: userData, error: userError } = await sb.auth.getUser();
+  const user = userData.user;
+  if (userError || !user) return { ok: false, response: json({ error: "Sessão inválida" }, 401) };
+  if (user.email?.toLowerCase() !== "dainaflow@gmail.com") return { ok: false, response: json({ error: "Acesso restrito" }, 403) };
+
+  const { data: role, error: roleError } = await sb
+    .from("user_roles")
+    .select("role")
+    .eq("user_id", user.id)
+    .eq("role", "admin")
+    .maybeSingle();
+  if (roleError || !role) return { ok: false, response: json({ error: "Acesso restrito" }, 403) };
+  return { ok: true };
 }
 
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
+    const admin = await assertAdmin(req);
+    if (!admin.ok) return admin.response!;
+
     const briefing = (await req.json()) as Briefing;
+    if (!briefing.service_focus?.trim() || !briefing.scope_summary?.trim()) {
+      return json({ error: "Informe a ideia/serviço e o escopo da proposta." }, 400);
+    }
+
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
     if (!LOVABLE_API_KEY) throw new Error("LOVABLE_API_KEY not configured");
 
     const isProposal = briefing.type === "proposal";
 
     const systemPrompt = isProposal
-      ? `Você é uma redatora comercial sênior da Daina Flow (consultoria de People Analytics, Governança de Dados e Automação Low-code/No-code, conduzida por Larissa Daina dos Santos Quirino, Igarapé-MG).
+      ? `Você é uma estrategista comercial sênior da Daina Flow, consultoria brasileira de People Analytics, Governança de Dados e Automação Low-code/No-code.
 
-Sua tarefa: gerar uma PROPOSTA COMERCIAL detalhada (de 2 a 4 páginas) em PORTUGUÊS DO BRASIL, com tom profissional, acolhedor e consultivo.
+Sua tarefa é transformar um briefing simples em uma PROPOSTA COMERCIAL pronta para captar clientes, em português do Brasil, com tom profissional, consultivo e convincente.
 
-A proposta DEVE ter estas seções nesta ordem:
-1. Resumo Executivo (3–5 linhas com a essência da oferta e o valor total).
-2. Contexto e Desafio (o que entendemos da necessidade do cliente).
-3. Solução Proposta (descrição da abordagem e metodologia).
-4. Escopo Detalhado (lista de entregas em bullets, cada uma com 1 linha de descrição).
-5. Cronograma e Prazos (etapas com duração estimada).
-6. Investimento (valor, condições de pagamento, validade da proposta).
-7. Por que a Daina Flow (3–4 diferenciais).
-8. Próximos Passos.
+Você deve:
+- Fazer a proposta pela consultora, não apenas resumir o briefing.
+- Diagnosticar o problema do cliente e conectar o escopo ao resultado de negócio.
+- Sugerir investimento quando o valor não for informado, usando referências realistas do mercado brasileiro: automações simples R$1.500–5.000, dashboards/dados R$3.000–15.000, projetos estratégicos R$10.000+, hora especializada R$300–600.
+- Ajustar preço por complexidade, urgência e perfil do cliente. Estratégia conservadora puxa para baixo, equilibrada mantém mercado, premium puxa para cima. Urgência pode adicionar 20–40%.
+- Quebrar o investimento em itens/etapas coerentes.
+- Não prometer resultado garantido; use linguagem de potencial, ganho esperado e clareza operacional.
 
-Retorne APENAS um JSON válido (sem markdown, sem comentários) seguindo EXATAMENTE este schema:
+A proposta deve ter estas seções no body_markdown, nesta ordem:
+## Contexto e oportunidade
+## Objetivos da proposta
+## Solução proposta
+## Escopo detalhado
+## Cronograma e forma de trabalho
+## Investimento sugerido
+## Condições comerciais
+## Próximos passos
+
+Retorne APENAS JSON válido, sem markdown fora do JSON, seguindo exatamente este schema:
 {
-  "title": "string — título curto da proposta",
-  "intro": "string — resumo executivo (parágrafo único)",
-  "body_markdown": "string — TODAS as seções 2 a 8 em markdown bem formatado, com ## títulos",
-  "items": [
-    { "description": "string — entrega/etapa", "quantity": number, "unit_price": number }
-  ],
+  "title": "string",
+  "intro": "string — resumo executivo de 4 a 6 linhas",
+  "body_markdown": "string — seções acima em markdown",
+  "items": [{ "description": "string", "quantity": number, "unit_price": number }],
   "total": number,
+  "suggested_price_range": "string — faixa considerada, ex: R$ 4.500 a R$ 7.000",
+  "pricing_note": "string — justificativa curta do preço sugerido",
   "valid_until_days": number,
   "payment_terms": "string"
-}
+}`
+      : `Você é uma redatora contratual sênior da Daina Flow. Gere um CONTRATO DE PRESTAÇÃO DE SERVIÇOS claro, formal e completo em português do Brasil.
 
-Se o usuário não informou valores numéricos exatos, distribua o total_value informado entre os itens de forma coerente. Se o total for "A partir de", use o piso. Os valores numéricos devem ser realistas. NUNCA retorne texto fora do JSON.`
-      : `Você é uma advogada/redatora contratual sênior da Daina Flow (consultoria de People Analytics, Governança de Dados e Automação Low-code/No-code, conduzida por Larissa Daina dos Santos Quirino, MEI baseada em Igarapé-MG).
+O contrato deve conter cláusulas numeradas sobre partes, objeto, escopo, prazos, valor, obrigações, confidencialidade/LGPD, propriedade intelectual, rescisão, foro de Igarapé-MG e disposições finais.
 
-Sua tarefa: gerar um CONTRATO DE PRESTAÇÃO DE SERVIÇOS detalhado (mínimo 2 páginas) em PORTUGUÊS DO BRASIL, com linguagem clara e formal.
-
-O contrato DEVE ter estas cláusulas (numeradas):
-1. Das Partes (CONTRATADA: Larissa Daina dos Santos Quirino — Daina Flow; CONTRATANTE: dados do cliente).
-2. Do Objeto (descrição do serviço).
-3. Do Escopo e Entregas.
-4. Dos Prazos.
-5. Do Valor e Forma de Pagamento.
-6. Das Obrigações da CONTRATADA.
-7. Das Obrigações da CONTRATANTE.
-8. Da Confidencialidade e LGPD.
-9. Da Propriedade Intelectual.
-10. Da Rescisão.
-11. Do Foro (Comarca de Igarapé-MG).
-12. Disposições Finais.
-
-Retorne APENAS um JSON válido (sem markdown, sem comentários) seguindo EXATAMENTE este schema:
+Retorne APENAS JSON válido seguindo exatamente este schema:
 {
-  "title": "string — ex: 'Contrato de Prestação de Serviços — <cliente>'",
-  "body_markdown": "string — TODO o contrato em markdown com ## para cada cláusula",
+  "title": "string",
+  "body_markdown": "string — contrato completo em markdown com ## para cada cláusula",
   "total": number,
   "payment_terms": "string"
-}
+}`;
 
-NUNCA retorne texto fora do JSON.`;
-
-    const userPrompt = `Briefing do cliente:
+    const userPrompt = `Briefing:
 - Tipo: ${isProposal ? "Proposta comercial" : "Contrato"}
 - Cliente: ${briefing.client_name}${briefing.client_company ? ` (${briefing.client_company})` : ""}
-- Email do cliente: ${briefing.client_email ?? "—"}
-- Serviço/Objeto: ${briefing.service_focus}
-- Escopo resumido: ${briefing.scope_summary}
+- E-mail do cliente: ${briefing.client_email ?? "—"}
+- Título desejado: ${briefing.title_hint ?? "criar um título profissional"}
+- Ideia/serviço: ${briefing.service_focus}
+- Resultado desejado pelo cliente: ${briefing.client_goal ?? "não informado"}
+- Problema/oportunidade atual: ${briefing.current_challenge ?? "não informado"}
+- Escopo e entregáveis: ${briefing.scope_summary}
+- Perfil do cliente: ${briefing.client_profile ?? "não informado"}
+- Complexidade: ${briefing.complexity ?? "intermediária"}
+- Urgência: ${briefing.urgency ?? "normal"}
 - Prazo: ${briefing.deadline ?? "a definir"}
-- Valor: ${briefing.total_value ?? "a definir"}
+- Valor informado: ${briefing.total_value?.trim() || "não informado — sugira um valor"}
+- Estratégia de preço: ${briefing.pricing_style ?? "equilibrado"}
 - Condições de pagamento: ${briefing.payment_terms ?? "a definir"}
-- Observações: ${briefing.extra_notes ?? "—"}
-
-Gere o documento agora.`;
+- Observações: ${briefing.extra_notes ?? "—"}`;
 
     const upstream = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
       headers: {
-        Authorization: `Bearer ${LOVABLE_API_KEY}`,
+        "Lovable-API-Key": LOVABLE_API_KEY,
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
+        model: "google/gemini-3-flash-preview",
         messages: [
           { role: "system", content: systemPrompt },
           { role: "user", content: userPrompt },
@@ -115,36 +164,22 @@ Gere o documento agora.`;
     });
 
     if (!upstream.ok) {
-      if (upstream.status === 429) {
-        return new Response(JSON.stringify({ error: "Limite de requisições atingido. Tente novamente em instantes." }), {
-          status: 429, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
-      if (upstream.status === 402) {
-        return new Response(JSON.stringify({ error: "Créditos de IA esgotados." }), {
-          status: 402, headers: { ...corsHeaders, "Content-Type": "application/json" },
-        });
-      }
+      if (upstream.status === 429) return json({ error: "Limite de requisições atingido. Tente novamente em instantes." }, 429);
+      if (upstream.status === 402) return json({ error: "Créditos de IA esgotados." }, 402);
       const t = await upstream.text();
       console.error("AI gateway error:", upstream.status, t);
-      return new Response(JSON.stringify({ error: "Falha ao gerar documento" }), {
-        status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-      });
+      return json({ error: "Falha ao gerar documento" }, 500);
     }
 
     const data = await upstream.json();
     const content = data?.choices?.[0]?.message?.content ?? "{}";
     let parsed: any;
-    try { parsed = JSON.parse(content); }
-    catch { parsed = { error: "Resposta da IA inválida", raw: content }; }
+    try { parsed = extractJson(content); }
+    catch { parsed = { error: "Resposta da IA inválida" }; }
 
-    return new Response(JSON.stringify(parsed), {
-      headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json(parsed);
   } catch (e) {
     console.error("generate-document error:", e);
-    return new Response(JSON.stringify({ error: e instanceof Error ? e.message : "Erro" }), {
-      status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" },
-    });
+    return json({ error: e instanceof Error ? e.message : "Erro ao gerar documento" }, 500);
   }
 });

@@ -56,15 +56,20 @@ function EditProposal() {
   async function save() {
     if (!p) return;
     setSaving(true);
-    await supabase.from("proposals").update({
+    const { error: proposalError } = await supabase.from("proposals").update({
       title: p.title, intro: p.intro, body_markdown: p.body_markdown,
       valid_until: p.valid_until || null, total,
     }).eq("id", id);
-    await supabase.from("proposal_items").delete().eq("proposal_id", id);
+    if (proposalError) { setSaving(false); toast.error(proposalError.message); return; }
+
+    const { error: deleteError } = await supabase.from("proposal_items").delete().eq("proposal_id", id);
+    if (deleteError) { setSaving(false); toast.error(deleteError.message); return; }
+
     if (items.length > 0) {
-      await supabase.from("proposal_items").insert(items.map((it, idx) => ({
+      const { error: itemError } = await supabase.from("proposal_items").insert(items.map((it, idx) => ({
         proposal_id: id, description: it.description, quantity: it.quantity, unit_price: it.unit_price, position: idx,
       })));
+      if (itemError) { setSaving(false); toast.error(itemError.message); return; }
     }
     setSaving(false);
     toast.success("Proposta salva");
@@ -106,15 +111,43 @@ function EditProposal() {
     }, `proposta-${p.title.replace(/\s+/g, "-").toLowerCase().slice(0, 60)}`);
   }
 
-  function applyAI(r: BriefingResult) {
+  async function applyAI(r: BriefingResult) {
     if (!p) return;
-    setP({ ...p, title: r.title || p.title, intro: r.intro ?? p.intro, body_markdown: r.body_markdown ?? p.body_markdown });
-    if (r.items?.length) {
-      setItems(r.items.map((it, idx) => ({ description: it.description, quantity: it.quantity || 1, unit_price: it.unit_price || 0, position: idx })));
-    }
+    const generatedItems = r.items?.length
+      ? r.items
+      : r.total > 0
+        ? [{ description: "Projeto completo conforme escopo proposto", quantity: 1, unit_price: r.total }]
+        : [];
+    const nextItems = generatedItems.map((it, idx) => ({ description: it.description, quantity: it.quantity || 1, unit_price: it.unit_price || 0, position: idx }));
+    const nextTotal = nextItems.reduce((sum, item) => sum + Number(item.quantity || 0) * Number(item.unit_price || 0), 0) || Number(r.total || 0);
+    let nextValidUntil = p.valid_until;
     if (r.valid_until_days && !p.valid_until) {
       const d = new Date(); d.setDate(d.getDate() + r.valid_until_days);
-      setP((prev) => prev ? { ...prev, valid_until: d.toISOString().slice(0, 10) } : prev);
+      nextValidUntil = d.toISOString().slice(0, 10);
+    }
+    const nextProposal = { ...p, title: r.title || p.title, intro: r.intro ?? p.intro, body_markdown: r.body_markdown ?? p.body_markdown, valid_until: nextValidUntil };
+    setP(nextProposal);
+    setItems(nextItems);
+
+    const { error: proposalError } = await supabase.from("proposals").update({
+      title: nextProposal.title,
+      intro: nextProposal.intro,
+      body_markdown: nextProposal.body_markdown,
+      valid_until: nextProposal.valid_until || null,
+      total: nextTotal,
+    }).eq("id", id);
+    if (proposalError) throw new Error(proposalError.message);
+    const { error: deleteError } = await supabase.from("proposal_items").delete().eq("proposal_id", id);
+    if (deleteError) throw new Error(deleteError.message);
+    if (nextItems.length > 0) {
+      const { error: itemError } = await supabase.from("proposal_items").insert(nextItems.map((it, idx) => ({
+        proposal_id: id,
+        description: it.description,
+        quantity: it.quantity,
+        unit_price: it.unit_price,
+        position: idx,
+      })));
+      if (itemError) throw new Error(itemError.message);
     }
   }
 
@@ -199,6 +232,7 @@ function EditProposal() {
           clientName={p.clients.full_name}
           clientEmail={p.clients.email}
           clientCompany={p.clients.company ?? undefined}
+          initialTitle={p.title}
           onClose={() => setShowAI(false)}
           onGenerated={applyAI}
         />

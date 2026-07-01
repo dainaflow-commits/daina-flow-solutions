@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/admin/DashboardLayout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -7,8 +7,14 @@ import { toast } from "sonner";
 
 export const Route = createFileRoute("/dashboard/contratos")({
   head: () => ({ meta: [{ title: "Contratos — Admin" }] }),
-  component: () => <DashboardLayout><AdminContracts /></DashboardLayout>,
+  component: ContractsRoute,
 });
+
+function ContractsRoute() {
+  const location = useLocation();
+  if (location.pathname !== "/dashboard/contratos") return <Outlet />;
+  return <DashboardLayout><AdminContracts /></DashboardLayout>;
+}
 
 interface Contract {
   id: string; title: string; status: string; total: number; client_id: string;
