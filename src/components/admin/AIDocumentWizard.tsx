@@ -177,16 +177,33 @@ export function AIDocumentWizard({ type, clientName, clientEmail, clientCompany,
           )}
 
           {step === 2 && (
-            <div className="space-y-3">
-              <Label>{isProposal ? "O que deve entrar na proposta?" : "Prazo, valor e condições"}</Label>
-              <textarea
-                rows={7}
-                value={form.scope_summary}
-                onChange={(e) => setForm({ ...form, scope_summary: e.target.value })}
-                placeholder="Liste entregáveis, etapas, reuniões, dashboards, automações, treinamento, suporte, limites do escopo etc."
-                className="w-full rounded-xl border border-input bg-background p-3 text-sm"
-              />
-            </div>
+            isProposal ? (
+              <div className="space-y-3">
+                <Label>O que deve entrar na proposta?</Label>
+                <textarea
+                  rows={7}
+                  value={form.scope_summary}
+                  onChange={(e) => setForm({ ...form, scope_summary: e.target.value })}
+                  placeholder="Liste entregáveis, etapas, reuniões, dashboards, automações, treinamento, suporte, limites do escopo etc."
+                  className="w-full rounded-xl border border-input bg-background p-3 text-sm"
+                />
+              </div>
+            ) : (
+              <div className="grid gap-3 md:grid-cols-2">
+                <div className="space-y-2">
+                  <Label>Prazo</Label>
+                  <input value={form.deadline} onChange={(e) => setForm({ ...form, deadline: e.target.value })} placeholder="Ex.: 30 dias" className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm" />
+                </div>
+                <div className="space-y-2">
+                  <Label>Valor</Label>
+                  <input value={form.total_value} onChange={(e) => setForm({ ...form, total_value: e.target.value })} placeholder="Ex.: R$ 4500" className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm" />
+                </div>
+                <div className="space-y-2 md:col-span-2">
+                  <Label>Condições de pagamento</Label>
+                  <input value={form.payment_terms} onChange={(e) => setForm({ ...form, payment_terms: e.target.value })} className="h-11 w-full rounded-xl border border-input bg-background px-3 text-sm" />
+                </div>
+              </div>
+            )
           )}
 
           {step === 3 && isProposal && (
