@@ -1,4 +1,4 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
+import { createFileRoute, Link, Outlet, useLocation } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/admin/DashboardLayout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
@@ -8,8 +8,14 @@ import { AIDocumentWizard, type BriefingResult } from "@/components/admin/AIDocu
 
 export const Route = createFileRoute("/dashboard/propostas")({
   head: () => ({ meta: [{ title: "Propostas — Admin" }] }),
-  component: () => <DashboardLayout><AdminProposals /></DashboardLayout>,
+  component: ProposalsRoute,
 });
+
+function ProposalsRoute() {
+  const location = useLocation();
+  if (location.pathname !== "/dashboard/propostas") return <Outlet />;
+  return <DashboardLayout><AdminProposals /></DashboardLayout>;
+}
 
 interface Proposal {
   id: string; title: string; status: string; total: number; valid_until: string | null;
