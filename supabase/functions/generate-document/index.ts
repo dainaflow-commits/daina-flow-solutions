@@ -73,8 +73,11 @@ Deno.serve(async (req) => {
     if (!admin.ok) return admin.response!;
 
     const briefing = (await req.json()) as Briefing;
-    if (!briefing.service_focus?.trim() || !briefing.scope_summary?.trim()) {
-      return json({ error: "Informe a ideia/serviço e o escopo da proposta." }, 400);
+    if (!briefing.service_focus?.trim()) {
+      return json({ error: "Informe a ideia ou serviço a ser proposto." }, 400);
+    }
+    if (!briefing.scope_summary?.trim()) {
+      briefing.scope_summary = briefing.service_focus;
     }
 
     const LOVABLE_API_KEY = Deno.env.get("LOVABLE_API_KEY");
