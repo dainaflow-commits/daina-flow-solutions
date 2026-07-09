@@ -17,7 +17,7 @@ export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
       { title: "Daina Flow — Transformando dados em decisões inteligentes" },
-      { name: "description", content: "Larissa Daina · Analista Administrativa Jr. especialista em People Analytics, Governança de Dados e Automação Low-code/No-code." },
+      { name: "description", content: "Larissa Daina · Analista Administrativa especialista em People Analytics, Governança de Dados e Automação Low-code/No-code." },
       { property: "og:title", content: "Daina Flow — Transformando dados em decisões" },
       { property: "og:description", content: "Soluções práticas em People Analytics, automação e dashboards." },
       { property: "og:type", content: "website" },
