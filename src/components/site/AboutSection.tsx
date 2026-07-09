@@ -19,7 +19,7 @@ export function AboutSection() {
             Visão administrativa <span className="text-gradient-brand">+ automação técnica</span>
           </h2>
           <p className="text-muted-foreground leading-relaxed">
-            Sou Larissa Daina, Analista Administrativa Jr. e graduanda em Análise e
+            Sou Larissa Daina, Analista Administrativa e graduanda em Análise e
             Desenvolvimento de Sistemas, com especialização em People Analytics e
             Governança de Dados. Combino visão administrativa com automação técnica
             (Low-code/No-code) para entregar soluções práticas e eficientes.
@@ -32,7 +32,7 @@ export function AboutSection() {
           </p>
 
           <div className="grid gap-3 pt-4 sm:grid-cols-3">
-            <InfoChip icon={<Briefcase className="h-4 w-4" />} label="Analista Adm. Jr." />
+            <InfoChip icon={<Briefcase className="h-4 w-4" />} label="Analista Administrativa" />
             <InfoChip icon={<GraduationCap className="h-4 w-4" />} label="Graduação completa" />
             <InfoChip icon={<MapPin className="h-4 w-4" />} label="Igarapé-MG" />
           </div>
