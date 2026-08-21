@@ -2,11 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/admin/DashboardLayout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Plus, Trash2, Save, ArrowLeft, FileDown, Send, Sparkles, FileText } from "lucide-react";
+import { Loader2, Plus, Trash2, Save, ArrowLeft, FileDown, Send, Sparkles, FileText, Lightbulb, HelpCircle, TrendingUp, Target, Repeat } from "lucide-react";
 import { toast } from "sonner";
 import { generateProposalPdf } from "@/lib/documentPdf";
 import { downloadEditableDoc } from "@/lib/editableDoc";
-import { AIDocumentWizard, type BriefingResult } from "@/components/admin/AIDocumentWizard";
+import { AIDocumentWizard, type BriefingResult, type ProposalInsights } from "@/components/admin/AIDocumentWizard";
 
 export const Route = createFileRoute("/dashboard/propostas/$id")({
   head: () => ({ meta: [{ title: "Editar Proposta — Admin" }] }),
@@ -19,6 +19,7 @@ interface Proposal {
   valid_until: string | null;
   total: number; status: string; client_id: string; signature_data: string | null;
   signer_name: string | null; signed_at: string | null;
+  ai_insights: ProposalInsights | null;
   clients?: { full_name: string; email?: string; company?: string | null } | null;
 }
 
@@ -58,7 +59,7 @@ function EditProposal() {
     setSaving(true);
     const { error: proposalError } = await supabase.from("proposals").update({
       title: p.title, intro: p.intro, body_markdown: p.body_markdown,
-      valid_until: p.valid_until || null, total,
+      valid_until: p.valid_until || null, total, ai_insights: p.ai_insights ?? null,
     }).eq("id", id);
     if (proposalError) { setSaving(false); toast.error(proposalError.message); return; }
 
@@ -125,7 +126,16 @@ function EditProposal() {
       const d = new Date(); d.setDate(d.getDate() + r.valid_until_days);
       nextValidUntil = d.toISOString().slice(0, 10);
     }
-    const nextProposal = { ...p, title: r.title || p.title, intro: r.intro ?? p.intro, body_markdown: r.body_markdown ?? p.body_markdown, valid_until: nextValidUntil };
+    const insights: ProposalInsights = {
+      hipoteses_a_confirmar: r.hipoteses_a_confirmar,
+      oportunidades_adicionais: r.oportunidades_adicionais,
+      perguntas_estrategicas: r.perguntas_estrategicas,
+      impacto_financeiro: r.impacto_financeiro,
+      caminho_recorrente: r.caminho_recorrente,
+      suggested_price_range: r.suggested_price_range,
+      pricing_note: r.pricing_note,
+    };
+    const nextProposal = { ...p, title: r.title || p.title, intro: r.intro ?? p.intro, body_markdown: r.body_markdown ?? p.body_markdown, valid_until: nextValidUntil, ai_insights: insights };
     setP(nextProposal);
     setItems(nextItems);
 
@@ -135,6 +145,7 @@ function EditProposal() {
       body_markdown: nextProposal.body_markdown,
       valid_until: nextProposal.valid_until || null,
       total: nextTotal,
+      ai_insights: insights,
     }).eq("id", id);
     if (proposalError) throw new Error(proposalError.message);
     const { error: deleteError } = await supabase.from("proposal_items").delete().eq("proposal_id", id);
