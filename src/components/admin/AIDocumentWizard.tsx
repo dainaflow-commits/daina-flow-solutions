@@ -13,7 +13,25 @@ export interface BriefingResult {
   valid_until_days?: number;
   payment_terms?: string;
   items?: { description: string; quantity: number; unit_price: number }[];
+  // Campos estratégicos retornados pela IA — antes descartados
+  hipoteses_a_confirmar?: string[];
+  oportunidades_adicionais?: string[];
+  perguntas_estrategicas?: string[];
+  impacto_financeiro?: {
+    oportunidade: string;
+    receita_mensal: string;
+    custo_evitado_mensal: string;
+    tempo_economizado_h_mes: string;
+    base: string;
+  }[];
+  caminho_recorrente?: string;
 }
+
+// Estrutura dos insights persistidos no campo ai_insights da proposta
+export type ProposalInsights = Pick<
+  BriefingResult,
+  "hipoteses_a_confirmar" | "oportunidades_adicionais" | "perguntas_estrategicas" | "impacto_financeiro" | "caminho_recorrente" | "suggested_price_range" | "pricing_note"
+>;
 
 interface Props {
   type: "proposal" | "contract";
