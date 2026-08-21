@@ -237,6 +237,8 @@ function EditProposal() {
         </section>
       )}
 
+      {p.ai_insights && <InsightsPanel insights={p.ai_insights} />}
+
       {showAI && p.clients && (
         <AIDocumentWizard
           type="proposal"
