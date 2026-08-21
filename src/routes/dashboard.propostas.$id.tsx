@@ -237,6 +237,8 @@ function EditProposal() {
         </section>
       )}
 
+      {p.ai_insights && <InsightsPanel insights={p.ai_insights} />}
+
       {showAI && p.clients && (
         <AIDocumentWizard
           type="proposal"
@@ -256,6 +258,118 @@ function Field({ label, children }: { label: string; children: React.ReactNode }
   return (
     <div>
       <label className="mb-1.5 block text-sm font-medium">{label}</label>
+      {children}
+    </div>
+  );
+}
+
+function InsightsPanel({ insights }: { insights: ProposalInsights }) {
+  const [open, setOpen] = useState(true);
+  const has = (arr?: string[]) => !!arr?.length;
+  const hasImpact = !!insights.impacto_financeiro?.length;
+  const anyContent = has(insights.hipoteses_a_confirmar) || has(insights.oportunidades_adicionais) || has(insights.perguntas_estrategicas) || hasImpact || !!insights.caminho_recorrente || !!insights.suggested_price_range;
+  if (!anyContent) return null;
+
+  return (
+    <section className="rounded-2xl border border-violet-500/30 bg-violet-500/5 p-6">
+      <button onClick={() => setOpen((o) => !o)} className="flex w-full items-center justify-between">
+        <div className="flex items-center gap-2">
+          <div className="grid h-9 w-9 place-items-center rounded-xl bg-gradient-brand text-primary-foreground">
+            <Sparkles className="h-4 w-4" />
+          </div>
+          <div className="text-left">
+            <h2 className="font-display text-lg font-bold">Insights estratégicos da IA</h2>
+            <p className="text-xs text-muted-foreground">Use no diagnóstico — não aparecem no PDF enviado ao cliente</p>
+          </div>
+        </div>
+        <span className="text-xs text-muted-foreground">{open ? "Recolher" : "Ver"}</span>
+      </button>
+
+      {open && (
+        <div className="mt-5 space-y-5">
+          {insights.suggested_price_range && (
+            <div className="rounded-xl border border-border bg-card p-4">
+              <p className="text-xs uppercase tracking-wide text-muted-foreground">Faixa sugerida pela IA</p>
+              <p className="mt-1 font-display text-xl font-bold text-gradient-brand">{insights.suggested_price_range}</p>
+              {insights.pricing_note && <p className="mt-1 text-sm text-muted-foreground">{insights.pricing_note}</p>}
+            </div>
+          )}
+
+          {has(insights.hipoteses_a_confirmar) && (
+            <InsightBlock icon={Lightbulb} title="Hipóteses a confirmar antes de enviar">
+              <ul className="space-y-1.5 text-sm">
+                {insights.hipoteses_a_confirmar!.map((h, i) => (
+                  <li key={i} className="flex gap-2"><span className="text-violet-500">•</span><span>{h}</span></li>
+                ))}
+              </ul>
+            </InsightBlock>
+          )}
+
+          {has(insights.oportunidades_adicionais) && (
+            <InsightBlock icon={TrendingUp} title="Oportunidades adicionais (que o cliente não pediu)">
+              <ul className="space-y-1.5 text-sm">
+                {insights.oportunidades_adicionais!.map((o, i) => (
+                  <li key={i} className="flex gap-2"><span className="text-green-500">•</span><span>{o}</span></li>
+                ))}
+              </ul>
+            </InsightBlock>
+          )}
+
+          {hasImpact && (
+            <InsightBlock icon={Target} title="Impacto financeiro estimado">
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="border-b border-border text-left text-muted-foreground">
+                      <th className="py-2 pr-3 font-semibold">Oportunidade</th>
+                      <th className="py-2 px-2 font-semibold">Receita/mês</th>
+                      <th className="py-2 px-2 font-semibold">Custo evitado/mês</th>
+                      <th className="py-2 px-2 font-semibold">Tempo economizado</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {insights.impacto_financeiro!.map((row, i) => (
+                      <tr key={i} className="border-b border-border/50">
+                        <td className="py-2 pr-3 font-medium">{row.oportunidade}</td>
+                        <td className="py-2 px-2 text-green-600">{row.receita_mensal}</td>
+                        <td className="py-2 px-2 text-violet-600">{row.custo_evitado_mensal}</td>
+                        <td className="py-2 px-2">{row.tempo_economizado_h_mes}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </InsightBlock>
+          )}
+
+          {has(insights.perguntas_estrategicas) && (
+            <InsightBlock icon={HelpCircle} title="Perguntas para a reunião de diagnóstico">
+              <ol className="space-y-2 text-sm">
+                {insights.perguntas_estrategicas!.map((q, i) => (
+                  <li key={i} className="flex gap-2"><span className="font-bold text-violet-500">{i + 1}.</span><span>{q}</span></li>
+                ))}
+              </ol>
+            </InsightBlock>
+          )}
+
+          {insights.caminho_recorrente && (
+            <InsightBlock icon={Repeat} title="Caminho para receita recorrente">
+              <p className="text-sm text-muted-foreground">{insights.caminho_recorrente}</p>
+            </InsightBlock>
+          )}
+        </div>
+      )}
+    </section>
+  );
+}
+
+function InsightBlock({ icon: Icon, title, children }: { icon: any; title: string; children: React.ReactNode }) {
+  return (
+    <div className="rounded-xl border border-border bg-card p-4">
+      <div className="mb-2 flex items-center gap-2">
+        <Icon className="h-4 w-4 text-violet-500" />
+        <h3 className="text-sm font-bold">{title}</h3>
+      </div>
       {children}
     </div>
   );

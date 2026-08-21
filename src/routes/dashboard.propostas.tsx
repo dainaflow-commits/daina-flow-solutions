@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Plus, FileText, Trash2, Send, Pencil, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { AIDocumentWizard, type BriefingResult } from "@/components/admin/AIDocumentWizard";
+import { AIDocumentWizard, type BriefingResult, type ProposalInsights } from "@/components/admin/AIDocumentWizard";
 
 export const Route = createFileRoute("/dashboard/propostas")({
   head: () => ({ meta: [{ title: "Propostas — Admin" }] }),
@@ -88,6 +88,16 @@ function AdminProposals() {
       ? (() => { const d = new Date(); d.setDate(d.getDate() + result.valid_until_days!); return d.toISOString().slice(0, 10); })()
       : null;
 
+    const insights: ProposalInsights = {
+      hipoteses_a_confirmar: result.hipoteses_a_confirmar,
+      oportunidades_adicionais: result.oportunidades_adicionais,
+      perguntas_estrategicas: result.perguntas_estrategicas,
+      impacto_financeiro: result.impacto_financeiro,
+      caminho_recorrente: result.caminho_recorrente,
+      suggested_price_range: result.suggested_price_range,
+      pricing_note: result.pricing_note,
+    };
+
     const { data, error } = await supabase
       .from("proposals")
       .insert({
@@ -98,6 +108,7 @@ function AdminProposals() {
         valid_until: validUntil,
         total,
         status: "rascunho",
+        ai_insights: insights,
       })
       .select("id")
       .single();
