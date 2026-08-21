@@ -609,6 +609,7 @@ export type Database = {
       }
       proposals: {
         Row: {
+          ai_insights: Json | null
           body_markdown: string | null
           client_id: string
           created_at: string
@@ -625,6 +626,7 @@ export type Database = {
           valid_until: string | null
         }
         Insert: {
+          ai_insights?: Json | null
           body_markdown?: string | null
           client_id: string
           created_at?: string
@@ -641,6 +643,7 @@ export type Database = {
           valid_until?: string | null
         }
         Update: {
+          ai_insights?: Json | null
           body_markdown?: string | null
           client_id?: string
           created_at?: string
