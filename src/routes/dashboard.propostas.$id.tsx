@@ -2,11 +2,11 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { DashboardLayout } from "@/components/admin/DashboardLayout";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
-import { Loader2, Plus, Trash2, Save, ArrowLeft, FileDown, Send, Sparkles, FileText } from "lucide-react";
+import { Loader2, Plus, Trash2, Save, ArrowLeft, FileDown, Send, Sparkles, FileText, Lightbulb, HelpCircle, TrendingUp, Target, Repeat } from "lucide-react";
 import { toast } from "sonner";
 import { generateProposalPdf } from "@/lib/documentPdf";
 import { downloadEditableDoc } from "@/lib/editableDoc";
-import { AIDocumentWizard, type BriefingResult } from "@/components/admin/AIDocumentWizard";
+import { AIDocumentWizard, type BriefingResult, type ProposalInsights } from "@/components/admin/AIDocumentWizard";
 
 export const Route = createFileRoute("/dashboard/propostas/$id")({
   head: () => ({ meta: [{ title: "Editar Proposta — Admin" }] }),
