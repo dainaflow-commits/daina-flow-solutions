@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { Loader2, Plus, FileText, Trash2, Send, Pencil, Sparkles } from "lucide-react";
 import { toast } from "sonner";
-import { AIDocumentWizard, type BriefingResult } from "@/components/admin/AIDocumentWizard";
+import { AIDocumentWizard, type BriefingResult, type ProposalInsights } from "@/components/admin/AIDocumentWizard";
 
 export const Route = createFileRoute("/dashboard/propostas")({
   head: () => ({ meta: [{ title: "Propostas — Admin" }] }),
