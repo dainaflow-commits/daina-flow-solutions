@@ -88,6 +88,16 @@ function AdminProposals() {
       ? (() => { const d = new Date(); d.setDate(d.getDate() + result.valid_until_days!); return d.toISOString().slice(0, 10); })()
       : null;
 
+    const insights: ProposalInsights = {
+      hipoteses_a_confirmar: result.hipoteses_a_confirmar,
+      oportunidades_adicionais: result.oportunidades_adicionais,
+      perguntas_estrategicas: result.perguntas_estrategicas,
+      impacto_financeiro: result.impacto_financeiro,
+      caminho_recorrente: result.caminho_recorrente,
+      suggested_price_range: result.suggested_price_range,
+      pricing_note: result.pricing_note,
+    };
+
     const { data, error } = await supabase
       .from("proposals")
       .insert({
@@ -98,6 +108,7 @@ function AdminProposals() {
         valid_until: validUntil,
         total,
         status: "rascunho",
+        ai_insights: insights,
       })
       .select("id")
       .single();
