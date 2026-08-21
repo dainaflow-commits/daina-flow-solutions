@@ -19,6 +19,7 @@ interface Proposal {
   valid_until: string | null;
   total: number; status: string; client_id: string; signature_data: string | null;
   signer_name: string | null; signed_at: string | null;
+  ai_insights: ProposalInsights | null;
   clients?: { full_name: string; email?: string; company?: string | null } | null;
 }
 
@@ -58,7 +59,7 @@ function EditProposal() {
     setSaving(true);
     const { error: proposalError } = await supabase.from("proposals").update({
       title: p.title, intro: p.intro, body_markdown: p.body_markdown,
-      valid_until: p.valid_until || null, total,
+      valid_until: p.valid_until || null, total, ai_insights: p.ai_insights ?? null,
     }).eq("id", id);
     if (proposalError) { setSaving(false); toast.error(proposalError.message); return; }
 
