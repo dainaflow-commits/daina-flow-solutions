@@ -126,7 +126,16 @@ function EditProposal() {
       const d = new Date(); d.setDate(d.getDate() + r.valid_until_days);
       nextValidUntil = d.toISOString().slice(0, 10);
     }
-    const nextProposal = { ...p, title: r.title || p.title, intro: r.intro ?? p.intro, body_markdown: r.body_markdown ?? p.body_markdown, valid_until: nextValidUntil };
+    const insights: ProposalInsights = {
+      hipoteses_a_confirmar: r.hipoteses_a_confirmar,
+      oportunidades_adicionais: r.oportunidades_adicionais,
+      perguntas_estrategicas: r.perguntas_estrategicas,
+      impacto_financeiro: r.impacto_financeiro,
+      caminho_recorrente: r.caminho_recorrente,
+      suggested_price_range: r.suggested_price_range,
+      pricing_note: r.pricing_note,
+    };
+    const nextProposal = { ...p, title: r.title || p.title, intro: r.intro ?? p.intro, body_markdown: r.body_markdown ?? p.body_markdown, valid_until: nextValidUntil, ai_insights: insights };
     setP(nextProposal);
     setItems(nextItems);
 
@@ -136,6 +145,7 @@ function EditProposal() {
       body_markdown: nextProposal.body_markdown,
       valid_until: nextProposal.valid_until || null,
       total: nextTotal,
+      ai_insights: insights,
     }).eq("id", id);
     if (proposalError) throw new Error(proposalError.message);
     const { error: deleteError } = await supabase.from("proposal_items").delete().eq("proposal_id", id);
